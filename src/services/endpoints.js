@@ -1,0 +1,1 @@
+export const REWRITE_URL = "/v1/content/rewrite";
