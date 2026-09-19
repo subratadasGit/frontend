@@ -1,1 +1,524 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Landing design system
+   --------------------------------------------------------------------------
+   Scoped tokens + primitives for the marketing surface and the CMS admin.
+   The authenticated product pages keep their own light/dark Tailwind styling
+   and are untouched by anything in here.
+   ========================================================================== */
+
+@theme {
+  --color-void: #000000;
+  --color-ink: #050505;
+  --color-charcoal: #0a0a0a;
+  --color-ember: #ff4d1c;
+  --color-violet: #7c3aed;
+
+  --font-display: "Inter Tight", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root {
+  /* Surfaces */
+  --ink: #050505;
+  --void: #000000;
+  --charcoal: #0a0a0a;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --text-faint: rgba(255, 255, 255, 0.38);
+
+  /* Structure */
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+
+  /* Accent — sampled from the halftone-flow fragment shader's own palette
+     (col_red 0.8/0.1/0.05 and col_bright 1.0/0.6/0.2). */
+  --ember: #ff4d1c;
+  --ember-bright: #ff9933;
+  --violet: #7c3aed;
+
+  --shell: min(1600px, 100%);
+  --gutter: clamp(1.25rem, 5vw, 6rem);
+}
+
+/* ------------------------------ Shader frame ----------------------------- */
+
+/* The container ThreeUI's documented usage expects around the canvas. */
+.shader-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--void);
+}
+
+.shader-frame > iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Stand-in shown before mount and under reduced motion, built from the same
+   three colours the fragment shader mixes between. */
+.shader-frame__fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 55% at 32% 42%,
+      rgba(255, 153, 51, 0.5) 0%,
+      rgba(204, 26, 13, 0.34) 38%,
+      transparent 72%
+    ),
+    radial-gradient(
+      70% 60% at 76% 68%,
+      rgba(204, 26, 13, 0.4) 0%,
+      transparent 70%
+    ),
+    #050000;
+}
+
+/* Halftone dot grid matching the shader's 6px cell, so the fallback reads as
+   the same visual system rather than a plain gradient. */
+.shader-frame__fallback::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.85) 1.15px,
+    transparent 1.2px
+  );
+  background-size: 6px 6px;
+}
+
+/* ------------------------------ Landing shell ---------------------------- */
+
+.landing {
+  background: var(--ink);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+.landing ::selection {
+  background: rgba(255, 77, 28, 0.32);
+  color: #fff;
+}
+
+/* Hairline column rules that run the full height of the page, echoing the
+   structural frame in the authored shader document. */
+.shell {
+  width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.shell--ruled {
+  border-inline: 1px solid var(--hairline);
+}
+
+.rule-top {
+  border-top: 1px solid var(--hairline);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.9vw, 0.75rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.accent {
+  color: var(--ember);
+}
+
+/* ---------------------------- Reveal animations -------------------------- */
+
+/* Mask reveal: a line slides up from behind its own overflow box, resolving
+   from blurred to sharp. Stagger is driven by --delay on each line. */
+.reveal-line {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.02em;
+}
+
+.reveal-line > span {
+  display: block;
+  transform: translateY(110%);
+  filter: blur(14px);
+  opacity: 0;
+  transition:
+    transform 1.05s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.05s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.7s ease-out;
+  transition-delay: var(--delay, 0ms);
+}
+
+.is-visible .reveal-line > span,
+.reveal-line.is-visible > span {
+  transform: translateY(0);
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* Softer reveal for body copy and cards. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--delay, 0ms);
+}
+
+/* Matches both a self-revealing element and one inside a revealed section. */
+.reveal.is-visible,
+.is-visible .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* -------------------------------- Marquee -------------------------------- */
+
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 38s linear infinite;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ---------------------------- Interactive cursor ------------------------- */
+
+/* Desktop-only: a soft radial glow trailing a precise dot. Touch and
+   coarse-pointer devices never mount it and keep the native cursor. */
+.cursor-glow,
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cursor-glow {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: radial-gradient(
+    circle,
+    rgba(255, 77, 28, 0.16) 0%,
+    transparent 68%
+  );
+  transition:
+    width 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.28s ease,
+    border-color 0.28s ease;
+}
+
+.cursor-glow[data-active="true"] {
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  border-color: rgba(255, 77, 28, 0.55);
+  background: radial-gradient(
+    circle,
+    rgba(255, 77, 28, 0.22) 0%,
+    transparent 70%
+  );
+}
+
+.cursor-dot {
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+/* Hide the native cursor only while the custom one is actually mounted. */
+body[data-cursor="custom"],
+body[data-cursor="custom"] a,
+body[data-cursor="custom"] button,
+body[data-cursor="custom"] [role="button"] {
+  cursor: none;
+}
+
+/* ------------------------------ Microinteractions ------------------------ */
+
+.magnetic {
+  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 1.125rem 2rem;
+  border: 1px solid var(--hairline-strong);
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.4s ease,
+    transform 0.12s ease;
+}
+
+.btn:active {
+  transform: scale(0.975);
+}
+
+.btn__arrow {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:hover .btn__arrow {
+  transform: translateX(5px);
+}
+
+/* Primary: an accent wipe that fills from the bottom on hover. */
+.btn--primary {
+  background: var(--ember);
+  color: #0a0000;
+  border-color: var(--ember);
+  font-weight: 600;
+}
+
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #fff;
+  transform: translateY(100%);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 0 44px rgba(255, 77, 28, 0.42);
+}
+
+.btn--primary:hover::before {
+  transform: translateY(0);
+}
+
+.btn--ghost {
+  color: #fff;
+  background: transparent;
+}
+
+.btn--ghost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(100%);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn--ghost:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn--ghost:hover::before {
+  transform: translateY(0);
+}
+
+/* Cards: hairline surface that lifts, warms its border, and sweeps a soft
+   accent gradient in from the top-left on hover. */
+.card {
+  position: relative;
+  background: var(--charcoal);
+  border: 1px solid var(--hairline);
+  isolation: isolate;
+  transition:
+    border-color 0.45s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s ease;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  background: radial-gradient(
+    120% 100% at 0% 0%,
+    rgba(255, 77, 28, 0.14) 0%,
+    transparent 62%
+  );
+  transition: opacity 0.5s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 77, 28, 0.36);
+  box-shadow: 0 24px 70px -30px rgba(255, 77, 28, 0.42);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Slight 3D response, driven by --tilt-x / --tilt-y set in JS. */
+.card--tilt {
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg)) translateY(var(--lift, 0));
+}
+
+.card--tilt:hover {
+  --lift: -6px;
+}
+
+/* Collection tiles */
+.tile__image {
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tile:hover .tile__image {
+  transform: scale(1.07);
+}
+
+.tile__meta {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tile:hover .tile__meta,
+.tile:focus-within .tile__meta {
+  opacity: 1;
+  transform: none;
+}
+
+/* Navigation active indicator */
+.nav-link {
+  position: relative;
+  transition: color 0.25s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background: var(--ember);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after,
+.nav-link[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* Scroll cue */
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, var(--ember));
+  animation: scroll-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* ----------------------------- Reduced motion ---------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal-line > span {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .marquee {
+    animation: none;
+    transform: none;
+  }
+
+  .scroll-cue::after {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* Thin scrollbar for the dark surfaces. */
+.landing,
+.admin {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-width: thin;
+}

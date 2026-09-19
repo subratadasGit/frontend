@@ -1,11 +1,12 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Flip, ToastContainer } from "react-toastify";
 import Nav from "./components/Nav";
 import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner";
 
+const Landing = lazy(() => import("./page/Landing"));
 const Home = lazy(() => import("./page/Home"));
 const Image = lazy(() => import("./page/Image"));
 const Content = lazy(() => import("./page/Content"));
@@ -16,18 +17,29 @@ const GenerateContent = lazy(() => import("./page/GenerateContent"));
 const ImageHistory = lazy(() => import("./page/ImageHistory"));
 const ContentHistory = lazy(() => import("./page/ContentHistory"));
 const ContentDetails = lazy(() => import("./page/ContentDetails"));
+const AdminLayout = lazy(() => import("./page/admin/AdminLayout"));
+const Dashboard = lazy(() => import("./page/admin/Dashboard"));
+const ResourcePage = lazy(() => import("./page/admin/ResourcePage"));
+
+/**
+ * The marketing landing page and the CMS admin both ship their own chrome, so
+ * the product navigation is suppressed there.
+ */
+const CHROMELESS = [/^\/$/, /^\/admin(\/|$)/];
+
+function AppChrome() {
+  const { pathname } = useLocation();
+  if (CHROMELESS.some((pattern) => pattern.test(pathname))) return null;
+  return <Nav />;
+}
 
 function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
-
+  // One dark system across marketing, product and admin. The "dark" class is
+  // pinned so any remaining "dark:" utilities resolve to the same palette.
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+    document.documentElement.classList.add("dark");
+    document.documentElement.style.colorScheme = "dark";
+  }, []);
 
   return (
     <BrowserRouter>
@@ -41,14 +53,18 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme={theme}
+        theme="dark"
         transition={Flip}
       />
       <AuthProvider>
-        <Nav theme={theme} toggleTheme={toggleTheme} />
+        <AppChrome />
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
+            {/* Marketing */}
+            <Route path="/" element={<Landing />}></Route>
+
+            {/* Product */}
+            <Route path="/app" element={<Home />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<SignUp />}></Route>
             <Route
@@ -107,6 +123,19 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+            {/* CMS admin — reuses the app's existing JWT auth guard */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Dashboard />}></Route>
+              <Route path=":resource" element={<ResourcePage />}></Route>
+            </Route>
           </Routes>
         </Suspense>
       </AuthProvider>

@@ -1,163 +1,156 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/auth";
-import { ArrowIcon, ImageIcon, WriteIcon } from "../components/Icon";
+import { ImageIcon, ListIcon, WriteIcon } from "../components/Icon";
+import { Btn, Page, PageHeader, Panel } from "../components/ui/AppUI";
+
+/**
+ * Product overview — the first screen after signing in.
+ *
+ * Deliberately a workspace, not a second landing page: the shader and oversized
+ * marketing type stay on `/`, while this screen is a quiet, dense entry point
+ * into the tools.
+ */
+const TOOLS = [
+  {
+    to: "/content",
+    title: "Content Studio",
+    description:
+      "Rewrite, expand, shorten, draft articles, and generate SEO metadata.",
+    icon: <WriteIcon style="w-6 h-6" />,
+  },
+  {
+    to: "/image",
+    title: "Image Generation",
+    description:
+      "Turn a description into original artwork at six preset resolutions.",
+    icon: <ImageIcon style="w-6 h-6" />,
+  },
+  {
+    to: "/content/history",
+    title: "History",
+    description:
+      "Search everything you have generated and re-open any version.",
+    icon: <ListIcon style="w-6 h-6" />,
+  },
+];
+
+const ACTIONS = [
+  { to: "/content/rewrite", label: "Rewrite content" },
+  { to: "/content/expand", label: "Expand content" },
+  { to: "/content/shorten", label: "Shorten content" },
+  { to: "/content/generate-article", label: "Generate article" },
+  { to: "/content/seo-content", label: "SEO metadata" },
+  { to: "/image/generate", label: "Generate image" },
+];
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, name } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <Page>
+        <PageHeader
+          eyebrow="Workspace"
+          title="Sign in to start creating"
+          description="Your generated content, images, and history live behind your account."
+          actions={
+            <>
+              <Btn to="/register">Create account</Btn>
+              <Btn to="/login" variant="ghost">
+                Sign in
+              </Btn>
+            </>
+          }
+        />
+        <Panel>
+          <p className="text-sm leading-relaxed text-white/55">
+            creates.io turns a prompt into publish-ready work — rewrites,
+            expansions, full articles, SEO metadata, and original imagery — and
+            keeps every version in one searchable workspace.
+          </p>
+        </Panel>
+      </Page>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20"></div>
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-4 tracking-tight">
-              Generator{" "}
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                CMS
+    <Page>
+      <PageHeader
+        eyebrow="Workspace"
+        title={name ? `Welcome back, ${name}.` : "Welcome back."}
+        description="Pick a tool, or jump straight into an action."
+        actions={
+          <>
+            <Btn to="/content">Open studio</Btn>
+            <Btn to="/admin" variant="ghost">
+              Manage site
+            </Btn>
+          </>
+        }
+      />
+
+      <section aria-labelledby="tools-heading">
+        <h2
+          id="tools-heading"
+          className="font-mono text-[0.625rem] tracking-[0.2em] text-white/30 uppercase"
+        >
+          Tools
+        </h2>
+        <div className="mt-5 grid gap-4 sm:gap-5 md:grid-cols-3">
+          {TOOLS.map((tool, index) => (
+            <Link
+              key={tool.to}
+              to={tool.to}
+              className="card group flex min-h-[13rem] flex-col justify-between p-7 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff4d1c]"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <span className="font-mono text-xs tracking-[0.2em] text-white/25">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[#ff4d1c] transition-transform duration-500 group-hover:scale-110">
+                  {tool.icon}
+                </span>
+              </div>
+              <div className="mt-10">
+                <h3 className="text-xl font-semibold tracking-[-0.025em]">
+                  {tool.title}
+                </h3>
+                <p className="mt-2.5 text-sm leading-relaxed text-white/55">
+                  {tool.description}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="actions-heading" className="mt-14">
+        <h2
+          id="actions-heading"
+          className="font-mono text-[0.625rem] tracking-[0.2em] text-white/30 uppercase"
+        >
+          Quick actions
+        </h2>
+        <div className="mt-5 grid gap-px border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-3">
+          {ACTIONS.map((action) => (
+            <Link
+              key={action.to}
+              to={action.to}
+              className="group flex items-center justify-between bg-[#0a0a0a] px-5 py-4 transition-colors hover:bg-white/[0.04]"
+            >
+              <span className="text-sm text-white/80 group-hover:text-white">
+                {action.label}
               </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-6 font-medium">
-              Your all-in-one AI-powered content and image management platform
-            </p>
-            <p className="text-base text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Transform your creative workflow with intelligent content
-              rewriting, AI image generation, and seamless content organization.
-              Create, edit, and manage everything in one modern, intuitive
-              platform.
-            </p>
-            {!isAuthenticated && (
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link
-                  to="/register"
-                  className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200"
-                >
-                  Get Started Free
-                </Link>
-                <Link
-                  to="/login"
-                  className="px-6 py-2.5 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-200 border border-gray-700"
-                >
-                  Sign In
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-gray-800/30 border border-gray-700/50 rounded-xl p-8 md:p-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">
-            What is Generator CMS?
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-300">
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                Content Management
-              </h3>
-              <p className="text-sm leading-relaxed">
-                Leverage advanced AI to rewrite, enhance, and optimize your
-                content. Our intelligent system helps you create engaging,
-                well-structured content that resonates with your audience while
-                maintaining your unique voice.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                Image Generation
-              </h3>
-              <p className="text-sm leading-relaxed">
-                Generate stunning, high-quality images powered by cutting-edge
-                AI technology. Create custom visuals for your projects, manage
-                your image library, and download your creations with ease.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {isAuthenticated && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-          <h2 className="text-xl font-semibold text-white mb-4 text-center">
-            Quick Actions
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            <Link
-              to="/content"
-              className="group relative bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-lg p-5 border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <WriteIcon style="w-5 h-5 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-semibold mb-1">
-                    Generate Content
-                  </h3>
-                  <p className="text-xs text-gray-400">
-                    AI-powered content generation
-                  </p>
-                </div>
-                <ArrowIcon style="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition-transform" />
-              </div>
+              <span
+                aria-hidden="true"
+                className="text-white/25 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#ff4d1c]"
+              >
+                →
+              </span>
             </Link>
-
-            <Link
-              to="/image"
-              className="group relative bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-lg p-5 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <ImageIcon style="w-5 h-5 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-semibold mb-1">
-                    Generate Image
-                  </h3>
-                  <p className="text-xs text-gray-400">AI image generation</p>
-                </div>
-                <ArrowIcon style="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </Link>
-          </div>
+          ))}
         </div>
-      )}
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-5 text-center hover:border-indigo-500/50 transition-all duration-300">
-            <div className="text-3xl mb-3">∞</div>
-            <h3 className="text-white font-semibold text-base mb-2">
-              Unlimited
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Create unlimited content and images
-            </p>
-          </div>
-          <div className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-5 text-center hover:border-purple-500/50 transition-all duration-300">
-            <div className="text-3xl mb-3">⚡</div>
-            <h3 className="text-white font-semibold text-base mb-2">
-              Lightning Fast
-            </h3>
-            <p className="text-gray-400 text-sm">
-              AI-powered generation in seconds
-            </p>
-          </div>
-          <div className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-5 text-center hover:border-pink-500/50 transition-all duration-300">
-            <div className="text-3xl mb-3">🔒</div>
-            <h3 className="text-white font-semibold text-base mb-2">
-              Secure & Private
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Your data is safe and protected
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </Page>
   );
 }

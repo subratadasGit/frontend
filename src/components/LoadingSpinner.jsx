@@ -1,12 +1,17 @@
-import React from "react";
 import { LoadingIcon } from "./Icon";
 
 export default function LoadingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+    <div
+      className="flex min-h-screen items-center justify-center bg-[#050505]"
+      role="status"
+      aria-live="polite"
+    >
       <div className="text-center">
-        <LoadingIcon style="h-12 w-12 animate-spin text-indigo-600" />
-        <p className="mt-2 text-gray-600 dark:text-gray-300">Loading...</p>
+        <LoadingIcon style="h-8 w-8 animate-spin text-[#ff4d1c] mx-auto" />
+        <p className="mt-4 font-mono text-[0.6875rem] tracking-[0.2em] text-white/40 uppercase">
+          Loading
+        </p>
       </div>
     </div>
   );

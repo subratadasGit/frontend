@@ -1,91 +1,142 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
+import { Btn } from "./ui/AppUI";
+import Logo from "./ui/Logo";
 
-export default function Nav({ theme, toggleTheme }) {
+/**
+ * Product navigation for the authenticated app.
+ *
+ * Same visual system as the landing page and the CMS admin — hairline borders,
+ * mono labels, ember accent — so moving between marketing, product and admin
+ * never feels like changing sites.
+ */
+const LINKS = [
+  { to: "/app", label: "Overview", end: true },
+  { to: "/content", label: "Content" },
+  { to: "/image", label: "Images" },
+  { to: "/admin", label: "CMS" },
+];
+
+export default function Nav() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { isAuthenticated, name: userName, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  // Close the mobile menu whenever the route changes.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+  const linkClass = ({ isActive }) =>
+    `nav-link text-[0.8125rem] transition-colors ${
+      isActive ? "text-white" : "text-white/55 hover:text-white"
+    }`;
+
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link
-            to="/"
-            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">G</span>
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Generator CMS
-            </h1>
-          </Link>
+    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#050505]/85 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between gap-6 px-4 sm:px-8">
+        <Link
+          to={isAuthenticated ? "/app" : "/"}
+          className="flex shrink-0 items-center"
+        >
+          <Logo />
+        </Link>
 
-          {isAuthenticated && (
-            <div className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/content"
-                className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 transition-colors"
-              >
-                Content
-              </Link>
-              <Link
-                to="/image"
-                className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 transition-colors"
-              >
-                Image
-              </Link>
-            </div>
-          )}
+        {isAuthenticated ? (
+          <nav aria-label="Product" className="hidden items-center gap-7 md:flex">
+            {LINKS.map((link) => (
+              <NavLink key={link.to} to={link.to} end={link.end} className={linkClass}>
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+        ) : null}
 
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="cursor-pointer px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
-            >
-              {theme === "dark" ? "Light" : "Dark"}
-            </button>
-            {isAuthenticated ? (
-              <>
-                <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-                  <div className="w-8 h-8 bg-indigo-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                    <span className="text-indigo-600 font-semibold text-sm">
-                      {userName?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="text-gray-700 dark:text-gray-200">{userName}</span>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="cursor-pointer px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
+        <div className="flex items-center gap-3">
+          {isAuthenticated ? (
+            <>
+              <div className="hidden items-center gap-2.5 border-l border-white/[0.08] pl-4 sm:flex">
+                <span
+                  aria-hidden="true"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 font-mono text-[0.6875rem] text-white/70"
                 >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:opacity-90 transition-opacity duration-200"
-                >
-                  Sign Up
-                </Link>
+                  {userName?.charAt(0)?.toUpperCase()}
+                </span>
+                <span className="max-w-[10rem] truncate text-sm text-white/75">
+                  {userName}
+                </span>
               </div>
-            )}
-          </div>
+              <Btn variant="danger" onClick={handleLogout} className="!px-3 !py-2">
+                Sign out
+              </Btn>
+
+              <button
+                type="button"
+                onClick={() => setOpen((value) => !value)}
+                aria-expanded={open}
+                aria-controls="product-nav"
+                aria-label={open ? "Close menu" : "Open menu"}
+                className="flex h-9 w-9 items-center justify-center border border-white/10 md:hidden"
+              >
+                <span className="relative block h-3 w-4" aria-hidden="true">
+                  <span
+                    className={`absolute left-0 block h-px w-full bg-white transition-all duration-300 ${
+                      open ? "top-1.5 rotate-45" : "top-0"
+                    }`}
+                  />
+                  <span
+                    className={`absolute left-0 block h-px w-full bg-white transition-all duration-300 ${
+                      open ? "top-1.5 -rotate-45" : "top-3"
+                    }`}
+                  />
+                </span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="nav-link text-[0.8125rem] text-white/55 hover:text-white"
+              >
+                Sign in
+              </Link>
+              <Btn to="/register">Get Started</Btn>
+            </>
+          )}
         </div>
       </div>
-    </nav>
+
+      {/* Mobile product links */}
+      {isAuthenticated ? (
+        <nav
+          id="product-nav"
+          hidden={!open}
+          aria-label="Product (mobile)"
+          className="border-t border-white/[0.08] px-4 pb-4 md:hidden"
+        >
+          {LINKS.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) =>
+                `block border-b border-white/[0.06] py-3.5 text-sm last:border-0 ${
+                  isActive ? "text-white" : "text-white/55"
+                }`
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
+        </nav>
+      ) : null}
+    </header>
   );
 }

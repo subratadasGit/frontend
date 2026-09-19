@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "react-toastify";
 import { signIn } from "../services/auth";
 import { CrossedEyeIcon, EyeIcon, LoadingIcon } from "../components/Icon";
 import { useAuth } from "../context/auth";
-import { toast } from "react-toastify";
+import { Btn, FieldError, INPUT, INPUT_ERROR, LABEL } from "../components/ui/AppUI";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -23,13 +24,11 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
-  });
+  } = useForm({ resolver: zodResolver(schema) });
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -38,75 +37,69 @@ export default function Login() {
     try {
       const { data: res } = await signIn(data);
       login(res?.data?.token, res?.data?.name);
-      toast.success("Logged in successfully");
-      navigate("/", { replace: true });
+      toast.success("Signed in");
+      navigate("/app", { replace: true });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Login failed");
+      toast.error(error?.response?.data?.message || "Sign in failed");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 py-12">
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#050505] px-4 py-16 text-white">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 md:p-12 border border-gray-100 dark:border-gray-800">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              Welcome Back
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300 text-sm">
-              Login to continue
-            </p>
-          </div>
+        <div className="mb-8 text-center">
+          <p className="font-mono text-[0.625rem] tracking-[0.2em] text-white/30 uppercase">
+            Account
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em]">
+            Welcome back
+          </h1>
+          <p className="mt-2 text-sm text-white/50">
+            Sign in to pick up where you left off.
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
+        <div className="border border-white/[0.08] bg-[#0a0a0a] p-7 sm:p-9">
+          <form onSubmit={handleSubmit(submitHandler)} className="space-y-6" noValidate>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
-              >
-                Email Address
+              <label htmlFor="email" className={LABEL}>
+                Email address
               </label>
               <input
                 id="email"
                 type="email"
+                autoComplete="email"
                 {...register("email")}
-                placeholder="Enter your email"
-                className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none ${
-                  errors?.email
-                    ? "border-red-300 focus:border-red-500 bg-red-50"
-                    : "border-gray-200 dark:border-gray-700 focus:border-indigo-500 bg-gray-50 dark:bg-gray-800 dark:text-gray-100"
-                }`}
+                placeholder="you@company.com"
+                aria-invalid={Boolean(errors?.email)}
+                aria-describedby={errors?.email ? "email-error" : undefined}
+                className={`${INPUT} ${errors?.email ? INPUT_ERROR : ""}`}
               />
-              {errors?.email?.message && (
-                <p className="text-red-500 text-xs mt-1.5">{errors.email.message}</p>
-              )}
+              <FieldError id="email-error">{errors?.email?.message}</FieldError>
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
-              >
+              <label htmlFor="password" className={LABEL}>
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   {...register("password")}
-                  placeholder="Enter your password"
-                  className={`w-full px-4 py-3 pr-12 rounded-lg border-2 transition-all duration-200 focus:outline-none ${
-                    errors?.password
-                      ? "border-red-300 focus:border-red-500 bg-red-50"
-                      : "border-gray-200 dark:border-gray-700 focus:border-indigo-500 bg-gray-50 dark:bg-gray-800 dark:text-gray-100"
-                  }`}
+                  placeholder="••••••••"
+                  aria-invalid={Boolean(errors?.password)}
+                  aria-describedby={errors?.password ? "password-error" : undefined}
+                  className={`${INPUT} pr-12 ${errors?.password ? INPUT_ERROR : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-300"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-white/40 transition-colors hover:text-white"
                 >
                   {showPassword ? (
                     <EyeIcon style="w-5 h-5" />
@@ -115,40 +108,29 @@ export default function Login() {
                   )}
                 </button>
               </div>
-              {errors?.password?.message && (
-                <p className="text-red-500 text-xs mt-1.5">{errors.password.message}</p>
-              )}
+              <FieldError id="password-error">{errors?.password?.message}</FieldError>
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-lg font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2"
-            >
+            <Btn type="submit" disabled={isSubmitting} className="w-full !py-3.5">
               {isSubmitting ? (
                 <>
-                  <LoadingIcon style="animate-spin h-5 w-5" />
-                  <span>Signing in...</span>
+                  <LoadingIcon style="animate-spin h-4 w-4" />
+                  <span>Signing in…</span>
                 </>
               ) : (
-                "Sign In"
+                "Sign in"
               )}
-            </button>
+            </Btn>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="font-semibold text-indigo-600 hover:text-indigo-700"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
         </div>
+
+        <p className="mt-6 text-center text-sm text-white/45">
+          Don&apos;t have an account?{" "}
+          <Link to="/register" className="nav-link text-white hover:text-[#ff9933]">
+            Create one
+          </Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

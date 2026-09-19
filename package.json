@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify:shader": "node scripts/verify-shader-source.mjs",
+    "sync:fallback": "node scripts/sync-fallback-content.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

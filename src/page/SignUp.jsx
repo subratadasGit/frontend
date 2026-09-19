@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { signUp } from "../services/auth";
 import { Link, useNavigate } from "react-router-dom";
-import { CrossedEyeIcon, EyeIcon, LoadingIcon } from "../components/Icon";
 import { toast } from "react-toastify";
+import { signUp } from "../services/auth";
+import { CrossedEyeIcon, EyeIcon, LoadingIcon } from "../components/Icon";
 import { useAuth } from "../context/auth";
+import { Btn, FieldError, INPUT, INPUT_ERROR, LABEL } from "../components/ui/AppUI";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -23,23 +24,34 @@ const schema = z.object({
     ),
 });
 
+/** Mirrors the schema so the requirements are visible before submitting. */
+const RULES = [
+  { label: "8+ characters", test: (value) => value.length >= 8 },
+  { label: "Uppercase", test: (value) => /[A-Z]/.test(value) },
+  { label: "Lowercase", test: (value) => /[a-z]/.test(value) },
+  { label: "Number", test: (value) => /[0-9]/.test(value) },
+  { label: "Symbol", test: (value) => /[^A-Za-z0-9]/.test(value) },
+];
+
 export default function SignUp() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
     reset,
-  } = useForm({
-    resolver: zodResolver(schema),
-  });
+  } = useForm({ resolver: zodResolver(schema), defaultValues: { password: "" } });
+
+  const password = watch("password") || "";
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/", { replace: true });
+      navigate("/app", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -47,108 +59,88 @@ export default function SignUp() {
     setIsSubmitting(true);
     try {
       await signUp(data);
-      toast.success("Account created successfully. Please login!");
+      toast.success("Account created. Sign in to continue.");
       reset();
       navigate("/login");
     } catch (error) {
-      console.log(`Error in signing in user: ${error}`);
-      toast.error("Sign up failed. Please try again");
+      toast.error(
+        error?.response?.data?.message || "Sign up failed. Please try again",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 py-12">
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#050505] px-4 py-16 text-white">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-xl p-8 md:p-12 border border-gray-100">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              Create Account
-            </h1>
-            <p className="text-gray-600 text-sm">
-              Sign up to get started with your account
-            </p>
-          </div>
+        <div className="mb-8 text-center">
+          <p className="font-mono text-[0.625rem] tracking-[0.2em] text-white/30 uppercase">
+            Account
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em]">
+            Create your workspace
+          </h1>
+          <p className="mt-2 text-sm text-white/50">
+            Generate your first article, rewrite, or image in under a minute.
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
+        <div className="border border-white/[0.08] bg-[#0a0a0a] p-7 sm:p-9">
+          <form onSubmit={handleSubmit(submitHandler)} className="space-y-6" noValidate>
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Full Name
+              <label htmlFor="name" className={LABEL}>
+                Name
               </label>
-              <div className="relative">
-                <input
-                  id="name"
-                  type="text"
-                  {...register("name")}
-                  placeholder="Enter your full name"
-                  className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-0 ${
-                    errors?.name
-                      ? "border-red-300 focus:border-red-500 bg-red-50"
-                      : "border-gray-200 focus:border-indigo-500 bg-gray-50 focus:bg-white"
-                  }`}
-                />
-              </div>
-              {errors?.name?.message && (
-                <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                  {errors.name.message}
-                </p>
-              )}
+              <input
+                id="name"
+                autoComplete="name"
+                {...register("name")}
+                placeholder="Your name"
+                aria-invalid={Boolean(errors?.name)}
+                aria-describedby={errors?.name ? "name-error" : undefined}
+                className={`${INPUT} ${errors?.name ? INPUT_ERROR : ""}`}
+              />
+              <FieldError id="name-error">{errors?.name?.message}</FieldError>
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Email Address
+              <label htmlFor="email" className={LABEL}>
+                Email address
               </label>
-              <div className="relative">
-                <input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  placeholder="Enter your email"
-                  className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-0 ${
-                    errors?.email
-                      ? "border-red-300 focus:border-red-500 bg-red-50"
-                      : "border-gray-200 focus:border-indigo-500 bg-gray-50 focus:bg-white"
-                  }`}
-                />
-              </div>
-              {errors?.email?.message && (
-                <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                  {errors.email.message}
-                </p>
-              )}
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                {...register("email")}
+                placeholder="you@company.com"
+                aria-invalid={Boolean(errors?.email)}
+                aria-describedby={errors?.email ? "email-error" : undefined}
+                className={`${INPUT} ${errors?.email ? INPUT_ERROR : ""}`}
+              />
+              <FieldError id="email-error">{errors?.email?.message}</FieldError>
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
+              <label htmlFor="password" className={LABEL}>
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   {...register("password")}
-                  placeholder="Create a strong password"
-                  className={`w-full px-4 py-3 pr-12 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-0 ${
-                    errors?.password
-                      ? "border-red-300 focus:border-red-500 bg-red-50"
-                      : "border-gray-200 focus:border-indigo-500 bg-gray-50 focus:bg-white"
-                  }`}
+                  placeholder="••••••••"
+                  aria-invalid={Boolean(errors?.password)}
+                  aria-describedby="password-rules"
+                  className={`${INPUT} pr-12 ${errors?.password ? INPUT_ERROR : ""}`}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-white/40 transition-colors hover:text-white"
                 >
                   {showPassword ? (
                     <EyeIcon style="w-5 h-5" />
@@ -157,42 +149,47 @@ export default function SignUp() {
                   )}
                 </button>
               </div>
-              {errors?.password?.message && (
-                <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                  {errors.password.message}
-                </p>
-              )}
+
+              <ul
+                id="password-rules"
+                className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5"
+              >
+                {RULES.map((rule) => {
+                  const met = rule.test(password);
+                  return (
+                    <li
+                      key={rule.label}
+                      className={`font-mono text-[0.625rem] tracking-[0.14em] uppercase transition-colors ${
+                        met ? "text-[#ff9933]" : "text-white/30"
+                      }`}
+                    >
+                      <span aria-hidden="true">{met ? "✓" : "·"}</span> {rule.label}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-lg font-semibold text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-            >
+            <Btn type="submit" disabled={isSubmitting} className="w-full !py-3.5">
               {isSubmitting ? (
                 <>
-                  <LoadingIcon style="animate-spin h-5 w-5" />
-                  <span>Creating Account...</span>
+                  <LoadingIcon style="animate-spin h-4 w-4" />
+                  <span>Creating…</span>
                 </>
               ) : (
-                "Create Account"
+                "Create account"
               )}
-            </button>
+            </Btn>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
         </div>
+
+        <p className="mt-6 text-center text-sm text-white/45">
+          Already have an account?{" "}
+          <Link to="/login" className="nav-link text-white hover:text-[#ff9933]">
+            Sign in
+          </Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

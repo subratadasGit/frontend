@@ -1,86 +1,78 @@
 import Card from "../components/Card";
 import { ListIcon, WriteIcon } from "../components/Icon";
+import { Page, PageHeader, Panel } from "../components/ui/AppUI";
 
 const contentFeatures = [
   {
     id: "rewrite",
     link: "/content/rewrite",
-    title: "Rewrite Content",
-    description: "Rewrite your content with AI",
-    icon: <WriteIcon style="w-6 h-6 text-blue-600" />,
-    gradient: "from-blue-600 to-cyan-600",
+    title: "Rewrite",
+    description: "Improve clarity, grammar, and tone without losing the meaning.",
+    icon: <WriteIcon style="w-6 h-6" />,
   },
   {
     id: "expand",
     link: "/content/expand",
-    title: "Expand content",
-    description: "Make your content more detailed with AI",
-    icon: <WriteIcon style="w-6 h-6 text-indigo-600" />,
-    gradient: "from-indigo-600 to-purple-600",
+    title: "Expand",
+    description: "Turn an outline or a few notes into a fully developed draft.",
+    icon: <WriteIcon style="w-6 h-6" />,
   },
   {
     id: "shorten",
     link: "/content/shorten",
-    title: "Shorten Content",
-    description: "Make your content more concise with AI",
-    icon: <WriteIcon style="w-6 h-6 text-orange-600" />,
-    gradient: "from-orange-600 to-stone-400",
-  },
-  {
-    id: "seo-content",
-    link: "/content/seo-content",
-    title: "SEO content",
-    description:
-      "Automatically generate SEO title, keyword, and meta description",
-    icon: <ListIcon style="w-6 h-6 text-cyan-600" />,
-    gradient: "from-cyan-500 to-pink-500",
+    title: "Shorten",
+    description: "Compress long copy down to the core argument.",
+    icon: <WriteIcon style="w-6 h-6" />,
   },
   {
     id: "generate-article",
     link: "/content/generate-article",
     title: "Generate Article",
-    description: "Create a new article with AI",
-    icon: <WriteIcon style="w-6 h-6 text-green-600" />,
-    gradient: "from-green-600 to-cyan-600",
+    description: "Give it a topic line and get a structured, publish-ready piece.",
+    icon: <WriteIcon style="w-6 h-6" />,
+  },
+  {
+    id: "seo-content",
+    link: "/content/seo-content",
+    title: "SEO Metadata",
+    description: "Titles, keywords, and meta descriptions from any article.",
+    icon: <ListIcon style="w-6 h-6" />,
   },
   {
     id: "history",
     link: "/content/history",
-    title: "Content history",
-    description: "View and manage all your generated content",
-    icon: <ListIcon style="w-6 h-6 text-purple-600" />,
-    gradient: "from-purple-500 to-pink-500",
+    title: "History",
+    description: "Search everything you have generated and re-open any version.",
+    icon: <ListIcon style="w-6 h-6" />,
   },
 ];
 
 export default function Content() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4 py-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-            Content Management
-          </h1>
-          <p className="text-gray-600 text-lg">
-            {/* add more content if needed */}
-            Transform and manage your content with AI-powered tools
-          </p>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
-          {contentFeatures.map((feature) => (
-            <Card key={feature.id} feature={feature} />
-          ))}
-        </div>
-        <div className="mt-12 border p-8 rounded-2xl shadow-xl border-gray-300">
-          <h2 className="text-2xl font-bold">About content Tools</h2>
-          <p className="text-gray-600 mt-2">
-            Our content management suite provides powerful AI-driven tools to
-            help you create, edit, and optimize your content. Whether you need
-            to rewrite text, shorten lengthy articles, or expand brief content,
-            we have the tools to help you achieve your goals.
-          </p>
-        </div>
+    <Page>
+      <PageHeader
+        eyebrow="Studio"
+        title="Content"
+        description="Five generation actions over one editor, with every result saved to your history."
+      />
+
+      <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {contentFeatures.map((feature, index) => (
+          <Card key={feature.id} feature={feature} index={index + 1} />
+        ))}
       </div>
-    </div>
+
+      <Panel className="mt-12">
+        <h2 className="font-mono text-[0.625rem] tracking-[0.2em] text-white/30 uppercase">
+          About these tools
+        </h2>
+        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/55">
+          Each action sends your text to Google Gemini with a prompt tuned for
+          that specific job, so a rewrite keeps your meaning while a summary
+          strips it back. Results are written to your account as you generate
+          them — nothing is lost when you close the tab.
+        </p>
+      </Panel>
+    </Page>
   );
 }
