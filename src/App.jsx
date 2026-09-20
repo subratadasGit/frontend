@@ -3,6 +3,7 @@ import { Flip, ToastContainer } from "react-toastify";
 import Nav from "./components/Nav";
 import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import { lazy, Suspense, useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner";
 
@@ -25,6 +26,8 @@ const QrGenerator = lazy(() => import("./page/tools/QrGenerator"));
 const BarcodeGenerator = lazy(() => import("./page/tools/BarcodeGenerator"));
 const CompressImage = lazy(() => import("./page/tools/CompressImage"));
 const CompressPdf = lazy(() => import("./page/tools/CompressPdf"));
+const DevTools = lazy(() => import("./page/devtools/DevTools"));
+const DevToolRoute = lazy(() => import("./page/devtools/DevToolRoute"));
 const AdminLayout = lazy(() => import("./page/admin/AdminLayout"));
 const Dashboard = lazy(() => import("./page/admin/Dashboard"));
 const ResourcePage = lazy(() => import("./page/admin/ResourcePage"));
@@ -198,13 +201,32 @@ function App() {
               }
             ></Route>
 
-            {/* CMS admin — reuses the app's existing JWT auth guard */}
+            {/* Developer tools — hub plus one config-driven route per tool */}
+            <Route
+              path="/devtools"
+              element={
+                <ProtectedRoute>
+                  <DevTools />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/devtools/:toolId"
+              element={
+                <ProtectedRoute>
+                  <DevToolRoute />
+                </ProtectedRoute>
+              }
+            ></Route>
+
+            {/* CMS admin — signed in AND holding the admin role. The API
+                enforces the same rule, so this only keeps the UI honest. */}
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <AdminRoute>
                   <AdminLayout />
-                </ProtectedRoute>
+                </AdminRoute>
               }
             >
               <Route index element={<Dashboard />}></Route>

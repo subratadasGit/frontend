@@ -36,7 +36,7 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       const { data: res } = await signIn(data);
-      login(res?.data?.token, res?.data?.name);
+      login(res?.data?.token, res?.data?.name, res?.data?.role);
       toast.success("Signed in");
       navigate("/app", { replace: true });
     } catch (error) {

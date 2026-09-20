@@ -59,7 +59,7 @@ const ACTIONS = [
 ];
 
 export default function Home() {
-  const { isAuthenticated, name } = useAuth();
+  const { isAuthenticated, isAdmin, name } = useAuth();
 
   if (!isAuthenticated) {
     return (
@@ -97,9 +97,11 @@ export default function Home() {
         actions={
           <>
             <Btn to="/content">Open studio</Btn>
-            <Btn to="/admin" variant="ghost">
-              Manage site
-            </Btn>
+            {isAdmin ? (
+              <Btn to="/admin" variant="ghost">
+                Manage site
+              </Btn>
+            ) : null}
           </>
         }
       />

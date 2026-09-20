@@ -9,21 +9,28 @@ export function AuthProvider({ children }) {
   });
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [name, setName] = useState(() => localStorage.getItem("name"));
+  // Tokens issued before roles existed have no role, which resolves to "user" —
+  // the CMS fails closed until the next sign-in.
+  const [role, setRole] = useState(() => localStorage.getItem("role") || "user");
 
-  const login = (token, name = "John") => {
+  const login = (token, name = "John", role = "user") => {
     localStorage.setItem("token", token);
     localStorage.setItem("name", name);
+    localStorage.setItem("role", role);
     setToken(token);
     setIsAuthenticated(true);
     setName(name);
+    setRole(role);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
+    localStorage.removeItem("role");
     setToken(null);
     setIsAuthenticated(false);
     setName(null);
+    setRole("user");
   };
 
   return (
@@ -32,6 +39,8 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         token,
         name,
+        role,
+        isAdmin: role === "admin",
         login,
         logout,
       }}

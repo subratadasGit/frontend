@@ -16,13 +16,15 @@ const LINKS = [
   { to: "/content", label: "Content" },
   { to: "/image", label: "Images" },
   { to: "/tools", label: "Tools" },
-  { to: "/admin", label: "CMS" },
+  { to: "/devtools", label: "Dev Tools" },
+  // Shown only to administrators — see `adminOnly` filtering below.
+  { to: "/admin", label: "CMS", adminOnly: true },
 ];
 
 export default function Nav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { isAuthenticated, name: userName, logout } = useAuth();
+  const { isAuthenticated, isAdmin, name: userName, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
   // Close the mobile menu whenever the route changes.
@@ -34,6 +36,8 @@ export default function Nav() {
     logout();
     navigate("/login");
   };
+
+  const links = LINKS.filter((link) => !link.adminOnly || isAdmin);
 
   const linkClass = ({ isActive }) =>
     `nav-link text-[0.8125rem] transition-colors ${
@@ -52,7 +56,7 @@ export default function Nav() {
 
         {isAuthenticated ? (
           <nav aria-label="Product" className="hidden items-center gap-7 md:flex">
-            {LINKS.map((link) => (
+            {links.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className={linkClass}>
                 {link.label}
               </NavLink>
@@ -122,7 +126,7 @@ export default function Nav() {
           aria-label="Product (mobile)"
           className="border-t border-white/[0.08] px-4 pb-4 md:hidden"
         >
-          {LINKS.map((link) => (
+          {links.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
