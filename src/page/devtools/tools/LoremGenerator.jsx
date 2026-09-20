@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Btn, Panel } from "../../../components/ui/AppUI";
 import {
   CheckField,
@@ -25,23 +25,24 @@ export default function LoremGenerator({ toolId }) {
   const [count, setCount] = useState(3);
   const [startWithLorem, setStartWithLorem] = useState(true);
   const [wrapHtml, setWrapHtml] = useState(false);
-  const [text, setText] = useState("");
 
-  const generate = useCallback(() => {
-    const output = generateLorem({ unit, count, startWithLorem });
-    setText(
-      wrapHtml
-        ? output
-            .split("\n\n")
-            .map((block) => `<p>${block}</p>`)
-            .join("\n")
-        : output,
-    );
-  }, [unit, count, startWithLorem, wrapHtml]);
+  const render = (options) => {
+    const output = generateLorem(options);
+    if (!options.wrapHtml) return output;
+    return output
+      .split(/\n{2,}/)
+      .map((block) => `<p>${block}</p>`)
+      .join("\n");
+  };
 
-  useEffect(() => {
-    generate();
-  }, [generate]);
+  // Seeded once, then regenerated from the controls — generation is random, so
+  // it belongs in an event handler rather than in render or an effect.
+  const [text, setText] = useState(() =>
+    render({ unit: "paragraphs", count: 3, startWithLorem: true, wrapHtml: false }),
+  );
+
+  const generate = (overrides = {}) =>
+    setText(render({ unit, count, startWithLorem, wrapHtml, ...overrides }));
 
   return (
     <DevToolPage toolId={toolId}>
@@ -49,21 +50,42 @@ export default function LoremGenerator({ toolId }) {
         <Panel className="!p-4 sm:!p-5">
           <PaneLabel>Options</PaneLabel>
           <div className="space-y-5">
-            <OptionGroup label="Unit" options={UNITS} value={unit} onChange={setUnit} />
+            <OptionGroup
+              label="Unit"
+              options={UNITS}
+              value={unit}
+              onChange={(value) => {
+                setUnit(value);
+                generate({ unit: value });
+              }}
+            />
             <RangeField
               label="How many"
               value={count}
-              onChange={setCount}
+              onChange={(value) => {
+                setCount(value);
+                generate({ count: value });
+              }}
               min={1}
               max={unit === "words" ? 200 : 30}
             />
             <CheckField
               label={'Start with "Lorem ipsum"'}
               checked={startWithLorem}
-              onChange={setStartWithLorem}
+              onChange={(value) => {
+                setStartWithLorem(value);
+                generate({ startWithLorem: value });
+              }}
             />
-            <CheckField label="Wrap in <p> tags" checked={wrapHtml} onChange={setWrapHtml} />
-            <Btn onClick={generate} className="w-full">
+            <CheckField
+              label="Wrap in <p> tags"
+              checked={wrapHtml}
+              onChange={(value) => {
+                setWrapHtml(value);
+                generate({ wrapHtml: value });
+              }}
+            />
+            <Btn onClick={() => generate()} className="w-full">
               Regenerate
             </Btn>
           </div>

@@ -4,6 +4,7 @@ import Nav from "./components/Nav";
 import { AuthProvider } from "./context/auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import CommandPalette from "./components/devtools/CommandPalette";
 import { lazy, Suspense, useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner";
 
@@ -26,6 +27,7 @@ const QrGenerator = lazy(() => import("./page/tools/QrGenerator"));
 const BarcodeGenerator = lazy(() => import("./page/tools/BarcodeGenerator"));
 const CompressImage = lazy(() => import("./page/tools/CompressImage"));
 const CompressPdf = lazy(() => import("./page/tools/CompressPdf"));
+const DevToolsLayout = lazy(() => import("./page/devtools/DevToolsLayout"));
 const DevTools = lazy(() => import("./page/devtools/DevTools"));
 const DevToolRoute = lazy(() => import("./page/devtools/DevToolRoute"));
 const AdminLayout = lazy(() => import("./page/admin/AdminLayout"));
@@ -69,6 +71,8 @@ function App() {
       />
       <AuthProvider>
         <AppChrome />
+        {/* ⌘K tool search, available from anywhere in the product. */}
+        <CommandPalette />
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             {/* Marketing */}
@@ -201,23 +205,19 @@ function App() {
               }
             ></Route>
 
-            {/* Developer tools — hub plus one config-driven route per tool */}
+            {/* Developer tools — one shell with persistent section navigation,
+                the hub as its index, and a config-driven route per tool. */}
             <Route
               path="/devtools"
               element={
                 <ProtectedRoute>
-                  <DevTools />
+                  <DevToolsLayout />
                 </ProtectedRoute>
               }
-            ></Route>
-            <Route
-              path="/devtools/:toolId"
-              element={
-                <ProtectedRoute>
-                  <DevToolRoute />
-                </ProtectedRoute>
-              }
-            ></Route>
+            >
+              <Route index element={<DevTools />}></Route>
+              <Route path=":toolId" element={<DevToolRoute />}></Route>
+            </Route>
 
             {/* CMS admin — signed in AND holding the admin role. The API
                 enforces the same rule, so this only keeps the UI honest. */}

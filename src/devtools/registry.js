@@ -170,6 +170,19 @@ export const DEV_TOOLS = [
 
   /* -------------------------------- Database ------------------------------- */
   {
+    id: "prisma-workspace",
+    category: "database",
+    title: "Prisma Schema Visualizer",
+    description:
+      "Turn a Prisma schema into an interactive ER diagram, PlantUML, or a PNG, SVG or PDF you can share.",
+    keywords: [
+      "prisma", "schema", "diagram", "er", "erd", "entity", "relationship",
+      "plantuml", "uml", "visualize", "visualiser", "database", "models",
+      "export", "png", "svg", "pdf",
+    ],
+    component: "PrismaWorkspace",
+  },
+  {
     id: "sql-formatter",
     category: "database",
     title: "SQL Formatter",

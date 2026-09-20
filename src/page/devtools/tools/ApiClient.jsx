@@ -6,7 +6,6 @@ import {
   DevToolPage,
   DownloadButton,
   OptionGroup,
-  PaneLabel,
   RelatedTools,
   TextField,
   ToolErrorPanel,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Btn, Panel } from "../../../components/ui/AppUI";
 import {
   CodeField,
@@ -27,20 +27,16 @@ export default function RandomDataGenerator({ toolId }) {
   const [count, setCount] = useState(10);
   const [fields, setFields] = useState(DEFAULT_FIELDS);
   const [format, setFormat] = useState("json");
-  const [output, setOutput] = useState("");
-
-  const generate = useCallback(() => {
-    const rows = generateRandomData({ count, fields });
-    if (format === "csv") {
-      setOutput(jsonToCsv(JSON.stringify(rows)));
-      return;
-    }
-    if (format === "sql") {
-      const columns = fields.join(", ");
-      const values = rows
+  /** Builds the output text for a set of options. No state, no side effects. */
+  const build = (options) => {
+    const rows = generateRandomData(options);
+    if (options.format === "csv") return jsonToCsv(JSON.stringify(rows));
+    if (options.format === "sql") {
+      const columns = options.fields.join(", ");
+      return rows
         .map(
           (row) =>
-            `INSERT INTO records (${columns}) VALUES (${fields
+            `INSERT INTO records (${columns}) VALUES (${options.fields
               .map((field) => {
                 const value = row[field];
                 if (typeof value === "number") return value;
@@ -50,20 +46,27 @@ export default function RandomDataGenerator({ toolId }) {
               .join(", ")});`,
         )
         .join("\n");
-      setOutput(values);
-      return;
     }
-    setOutput(JSON.stringify(rows, null, 2));
-  }, [count, fields, format]);
+    return JSON.stringify(rows, null, 2);
+  };
 
-  useEffect(() => {
-    generate();
-  }, [generate]);
+  // Seeded once; regenerated from the controls, never from an effect.
+  const [output, setOutput] = useState(() =>
+    build({ count: 10, fields: DEFAULT_FIELDS, format: "json" }),
+  );
 
-  const toggleField = (field) =>
-    setFields((current) =>
-      current.includes(field) ? current.filter((entry) => entry !== field) : [...current, field],
-    );
+  const generate = (overrides = {}) => {
+    const options = { count, fields, format, ...overrides };
+    setOutput(options.fields.length === 0 ? "" : build(options));
+  };
+
+  const toggleField = (field) => {
+    const next = fields.includes(field)
+      ? fields.filter((entry) => entry !== field)
+      : [...fields, field];
+    setFields(next);
+    generate({ fields: next });
+  };
 
   const extension = format === "csv" ? "csv" : format === "sql" ? "sql" : "json";
 
@@ -73,8 +76,25 @@ export default function RandomDataGenerator({ toolId }) {
         <Panel className="!p-4 sm:!p-5">
           <PaneLabel>Options</PaneLabel>
           <div className="space-y-5">
-            <RangeField label="Rows" value={count} onChange={setCount} min={1} max={200} />
-            <OptionGroup label="Format" options={FORMATS} value={format} onChange={setFormat} />
+            <RangeField
+              label="Rows"
+              value={count}
+              onChange={(value) => {
+                setCount(value);
+                generate({ count: value });
+              }}
+              min={1}
+              max={200}
+            />
+            <OptionGroup
+              label="Format"
+              options={FORMATS}
+              value={format}
+              onChange={(value) => {
+                setFormat(value);
+                generate({ format: value });
+              }}
+            />
 
             <div>
               <span className="mb-2 block font-mono text-[0.6875rem] tracking-[0.16em] text-white/50 uppercase">
@@ -99,7 +119,7 @@ export default function RandomDataGenerator({ toolId }) {
               </div>
             </div>
 
-            <Btn onClick={generate} disabled={fields.length === 0} className="w-full">
+            <Btn onClick={() => generate()} disabled={fields.length === 0} className="w-full">
               Regenerate
             </Btn>
 

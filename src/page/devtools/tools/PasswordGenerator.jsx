@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Btn, Panel } from "../../../components/ui/AppUI";
 import {
   CheckField,
-  CodeField,
   CopyButton,
   DevToolPage,
   PaneLabel,
@@ -28,30 +27,39 @@ export default function PasswordGenerator({ toolId }) {
   const [count, setCount] = useState(5);
   const [sets, setSets] = useState({ lowercase: true, uppercase: true, digits: true, symbols: true });
   const [avoidAmbiguous, setAvoidAmbiguous] = useState(false);
-  const [passwords, setPasswords] = useState([]);
   const [error, setError] = useState(null);
 
   const alphabetSize =
     Object.entries(sets).reduce((total, [key, on]) => total + (on ? SET_SIZES[key] : 0), 0) -
     (avoidAmbiguous ? 6 : 0);
 
-  const generate = useCallback(() => {
+  /** Pure given its options — the randomness is the point, so it never runs in render. */
+  const build = (options) =>
+    Array.from({ length: Math.max(1, Math.min(options.count, 50)) }, () =>
+      generatePassword(options),
+    );
+
+  // Seeded once on mount; every later regeneration comes from a control.
+  const [passwords, setPasswords] = useState(() =>
+    build({ length: 20, count: 5, lowercase: true, uppercase: true, digits: true, symbols: true }),
+  );
+
+  const generate = (overrides = {}) => {
+    const options = { length, count, ...sets, avoidAmbiguous, ...overrides };
     try {
-      setPasswords(
-        Array.from({ length: Math.max(1, Math.min(count, 50)) }, () =>
-          generatePassword({ length, ...sets, avoidAmbiguous }),
-        ),
-      );
+      setPasswords(build(options));
       setError(null);
     } catch (caught) {
       setPasswords([]);
       setError({ message: caught.message });
     }
-  }, [length, count, sets, avoidAmbiguous]);
+  };
 
-  useEffect(() => {
-    generate();
-  }, [generate]);
+  const setSet = (key, value) => {
+    const next = { ...sets, [key]: value };
+    setSets(next);
+    generate(next);
+  };
 
   const bits = passwordEntropy("x".repeat(length), Math.max(1, alphabetSize));
   const strength = strengthOf(bits);
@@ -63,8 +71,26 @@ export default function PasswordGenerator({ toolId }) {
         <Panel className="!p-4 sm:!p-5">
           <PaneLabel>Options</PaneLabel>
           <div className="space-y-5">
-            <RangeField label="Length" value={length} onChange={setLength} min={8} max={64} />
-            <RangeField label="How many" value={count} onChange={setCount} min={1} max={50} />
+            <RangeField
+              label="Length"
+              value={length}
+              onChange={(value) => {
+                setLength(value);
+                generate({ length: value });
+              }}
+              min={8}
+              max={64}
+            />
+            <RangeField
+              label="How many"
+              value={count}
+              onChange={(value) => {
+                setCount(value);
+                generate({ count: value });
+              }}
+              min={1}
+              max={50}
+            />
 
             <div className="space-y-2">
               <span className="block font-mono text-[0.6875rem] tracking-[0.16em] text-white/50 uppercase">
@@ -73,31 +99,34 @@ export default function PasswordGenerator({ toolId }) {
               <CheckField
                 label="Lowercase (a–z)"
                 checked={sets.lowercase}
-                onChange={(value) => setSets((current) => ({ ...current, lowercase: value }))}
+                onChange={(value) => setSet("lowercase", value)}
               />
               <CheckField
                 label="Uppercase (A–Z)"
                 checked={sets.uppercase}
-                onChange={(value) => setSets((current) => ({ ...current, uppercase: value }))}
+                onChange={(value) => setSet("uppercase", value)}
               />
               <CheckField
                 label="Digits (0–9)"
                 checked={sets.digits}
-                onChange={(value) => setSets((current) => ({ ...current, digits: value }))}
+                onChange={(value) => setSet("digits", value)}
               />
               <CheckField
                 label="Symbols (!@#…)"
                 checked={sets.symbols}
-                onChange={(value) => setSets((current) => ({ ...current, symbols: value }))}
+                onChange={(value) => setSet("symbols", value)}
               />
               <CheckField
                 label="Avoid look-alikes (I l 1 O 0 o)"
                 checked={avoidAmbiguous}
-                onChange={setAvoidAmbiguous}
+                onChange={(value) => {
+                  setAvoidAmbiguous(value);
+                  generate({ avoidAmbiguous: value });
+                }}
               />
             </div>
 
-            <Btn onClick={generate} className="w-full">
+            <Btn onClick={() => generate()} className="w-full">
               Regenerate
             </Btn>
           </div>
@@ -157,7 +186,6 @@ export default function PasswordGenerator({ toolId }) {
             <div className="sr-only" aria-live="polite">
               {passwords.length} passwords generated.
             </div>
-            <CodeField value={text} readOnly ariaLabel="Generated passwords" rows={4} className="mt-3 hidden" />
           </Panel>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { INPUT, Panel } from "../../../components/ui/AppUI";
 import {
-  CheckField,
   CopyButton,
   DataRow,
   DevToolPage,
@@ -12,7 +11,6 @@ import {
 } from "../../../components/devtools/DevToolUI";
 import { buildChmod, parseChmod } from "../../../devtools/transforms/dev";
 
-const SCOPES = ["owner", "group", "others"];
 const BITS = [
   { id: "read", label: "Read", value: 4 },
   { id: "write", label: "Write", value: 2 },

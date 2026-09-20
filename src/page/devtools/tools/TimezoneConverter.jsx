@@ -62,7 +62,7 @@ export default function TimezoneConverter({ toolId }) {
   const [custom, setCustom] = useState("");
   const [useNow, setUseNow] = useState(true);
   const [instantInput, setInstantInput] = useState("");
-  const [tick, setTick] = useState(Date.now());
+  const [tick, setTick] = useState(() => Date.now());
 
   useEffect(() => {
     if (!useNow) return undefined;

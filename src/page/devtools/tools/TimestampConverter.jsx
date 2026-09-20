@@ -21,8 +21,8 @@ const toDate = (value, unit) => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
-const relative = (date) => {
-  const delta = date.getTime() - Date.now();
+const relative = (date, now) => {
+  const delta = date.getTime() - now;
   const absolute = Math.abs(delta);
   const steps = [
     { limit: 60000, divisor: 1000, unit: "second" },
@@ -42,7 +42,7 @@ export default function TimestampConverter({ toolId }) {
   const [timestamp, setTimestamp] = useState(() => String(Math.floor(Date.now() / 1000)));
   const [unit, setUnit] = useState("auto");
   const [dateInput, setDateInput] = useState("");
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   // A live clock is the point of this tool — without it the "current epoch"
   // readout would be stale the moment the page renders.
@@ -123,7 +123,7 @@ export default function TimestampConverter({ toolId }) {
               <DataRow label="Local" value={date.toLocaleString(undefined, { dateStyle: "full", timeStyle: "long" })} />
               <DataRow label="ISO 8601 (UTC)" value={date.toISOString()} />
               <DataRow label="UTC" value={date.toUTCString()} />
-              <DataRow label="Relative" value={relative(date)} />
+              <DataRow label="Relative" value={relative(date, now)} />
               <DataRow label="Seconds" value={String(Math.floor(date.getTime() / 1000))} />
               <DataRow label="Milliseconds" value={String(date.getTime())} />
             </dl>

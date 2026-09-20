@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Btn, Panel } from "../../../components/ui/AppUI";
 import {
   CheckField,
@@ -18,17 +18,15 @@ export default function UuidGenerator({ toolId }) {
   const [count, setCount] = useState(10);
   const [uppercase, setUppercase] = useState(false);
   const [braces, setBraces] = useState(false);
-  const [uuids, setUuids] = useState([]);
+  // Seeded on first render so the page is never sitting empty; every later
+  // regeneration is driven by an event rather than an effect, which keeps the
+  // randomness out of render.
+  const [uuids, setUuids] = useState(() => generateUuids(10, {}));
 
-  const generate = useCallback(() => {
-    setUuids(generateUuids(count, { uppercase, braces }));
-  }, [count, uppercase, braces]);
-
-  // Generate on mount and whenever the options change, so the page is never
-  // sitting empty waiting for a click.
-  useEffect(() => {
-    generate();
-  }, [generate]);
+  const generate = (overrides = {}) => {
+    const options = { count, uppercase, braces, ...overrides };
+    setUuids(generateUuids(options.count, options));
+  };
 
   const text = uuids.join("\n");
 
@@ -38,10 +36,33 @@ export default function UuidGenerator({ toolId }) {
         <Panel className="!p-4 sm:!p-5">
           <PaneLabel>Options</PaneLabel>
           <div className="space-y-5">
-            <RangeField label="How many" value={count} onChange={setCount} min={1} max={200} />
-            <CheckField label="Uppercase" checked={uppercase} onChange={setUppercase} />
-            <CheckField label="Wrap in braces" checked={braces} onChange={setBraces} />
-            <Btn onClick={generate} className="w-full">
+            <RangeField
+              label="How many"
+              value={count}
+              onChange={(value) => {
+                setCount(value);
+                generate({ count: value });
+              }}
+              min={1}
+              max={200}
+            />
+            <CheckField
+              label="Uppercase"
+              checked={uppercase}
+              onChange={(value) => {
+                setUppercase(value);
+                generate({ uppercase: value });
+              }}
+            />
+            <CheckField
+              label="Wrap in braces"
+              checked={braces}
+              onChange={(value) => {
+                setBraces(value);
+                generate({ braces: value });
+              }}
+            />
+            <Btn onClick={() => generate()} className="w-full">
               Regenerate
             </Btn>
           </div>

@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { Btn, INPUT, LABEL, Page, PageHeader, Panel } from "../ui/AppUI";
 import { Copy, Download, CrossIcon } from "../Icon";
 import { downloadBlob, handleCopy } from "../../utils/global";
-import { findTool } from "../../devtools/registry";
+import { CATEGORIES, findTool } from "../../devtools/registry";
 import { useFavourites, useRecents } from "../../devtools/useToolPrefs";
+import Breadcrumbs from "./Breadcrumbs";
 
 /**
  * The shared furniture for every developer tool.
@@ -43,12 +44,17 @@ function FavouriteButton({ toolId }) {
 }
 
 /**
- * Page wrapper for a single tool: title, description, favourite toggle and a
- * route back to the hub. Records the visit so the hub's "recent" list is real.
+ * Page wrapper for a single tool.
+ *
+ * Every tool gets the same orientation furniture — breadcrumbs, a back link to
+ * its category, the title and description, a favourite toggle — so you always
+ * know where you are and how to get out, without each tool restating it.
+ * Records the visit so the sidebar's "Recent" list is real.
  */
 export function DevToolPage({ toolId, children, actions }) {
   const tool = findTool(toolId);
   const { recordUse } = useRecents();
+  const category = CATEGORIES.find((entry) => entry.id === tool?.category);
 
   useEffect(() => {
     if (toolId) recordUse(toolId);
@@ -56,17 +62,31 @@ export function DevToolPage({ toolId, children, actions }) {
 
   return (
     <Page>
+      <Breadcrumbs
+        trail={[
+          { label: "Dev Tools", to: "/devtools" },
+          category ? { label: category.label, to: `/devtools?category=${category.id}` } : null,
+          { label: tool?.title || "Tool" },
+        ]}
+      />
+
+      {category ? (
+        <Link
+          to={`/devtools?category=${category.id}`}
+          className="inline-flex items-center gap-1.5 font-mono text-[0.625rem] tracking-[0.2em] text-white/35 uppercase transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff4d1c]"
+        >
+          <span aria-hidden="true">←</span> {category.label}
+        </Link>
+      ) : null}
+
       <PageHeader
-        eyebrow="Dev Tools"
+        className="mt-2"
         title={tool?.title || "Tool"}
         description={tool?.description}
         actions={
           <>
             {actions}
             {toolId ? <FavouriteButton toolId={toolId} /> : null}
-            <Btn to="/devtools" variant="ghost">
-              All tools
-            </Btn>
           </>
         }
       />

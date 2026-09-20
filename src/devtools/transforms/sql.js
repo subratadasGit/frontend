@@ -165,7 +165,7 @@ function splitColumn(definition) {
   const remainder = nameMatch[2].trim();
   const upper = remainder.toUpperCase();
 
-  let type = null;
+  let type;
   const multi = MULTI_WORD_TYPES.find((candidate) => upper.startsWith(candidate));
   if (multi) {
     type = remainder.slice(0, multi.length);
@@ -445,7 +445,6 @@ export function parsePrismaSchema(source) {
 export function buildErdLayout({ tables, relations }, { columns = 3, boxWidth = 240, rowHeight = 26, gapX = 80, gapY = 70 } = {}) {
   const nodes = tables.map((table, index) => {
     const column = index % columns;
-    const row = Math.floor(index / columns);
     const height = 34 + table.columns.length * rowHeight;
     return {
       ...table,

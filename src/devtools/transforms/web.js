@@ -159,12 +159,24 @@ export function contrastRatio(a, b) {
 
 /* -------------------------------- Formatters ------------------------------- */
 
+/**
+ * Stand-in for a CSS comment while the rest of the source is collapsed.
+ *
+ * A printable, base64-safe token rather than a NUL byte: control characters in
+ * a regular expression are a lint error, and this survives the whitespace
+ * collapse just as well.
+ */
+const COMMENT_MARKER = "␄CSSCOMMENT␄";
+
 /** Re-indents CSS. Handles nesting, media queries and preserves comments. */
 export function formatCss(source, { indent = 2 } = {}) {
   if (!source.trim()) throw new Error("There is nothing to format.");
 
   const compact = source
-    .replace(/\/\*[\s\S]*?\*\//g, (comment) => `\u0000${btoa(unescape(encodeURIComponent(comment)))}\u0000`)
+    .replace(
+      /\/\*[\s\S]*?\*\//g,
+      (comment) => COMMENT_MARKER + btoa(unescape(encodeURIComponent(comment))) + COMMENT_MARKER,
+    )
     .replace(/\s+/g, " ")
     .trim();
 
@@ -197,7 +209,7 @@ export function formatCss(source, { indent = 2 } = {}) {
     .map((line) => line.trimEnd())
     .filter((line, index, lines) => line.trim() !== "" || lines[index - 1]?.trim() !== "")
     .join("\n")
-    .replace(/\u0000([A-Za-z0-9+/=]+)\u0000/g, (unused, encoded) =>
+    .replace(new RegExp(COMMENT_MARKER + "([A-Za-z0-9+/=]+)" + COMMENT_MARKER, "g"), (unused, encoded) =>
       decodeURIComponent(escape(atob(encoded))),
     )
     .trim();

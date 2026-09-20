@@ -40,6 +40,7 @@ const COMPONENTS = {
   MimeLookup: lazy(() => import("./tools/MimeLookup")),
   PasswordGenerator: lazy(() => import("./tools/PasswordGenerator")),
   PrismaViewer: lazy(() => import("./tools/PrismaViewer")),
+  PrismaWorkspace: lazy(() => import("./tools/PrismaWorkspace")),
   QueryStringParser: lazy(() => import("./tools/QueryStringParser")),
   RandomDataGenerator: lazy(() => import("./tools/RandomDataGenerator")),
   RegexTester: lazy(() => import("./tools/RegexTester")),
