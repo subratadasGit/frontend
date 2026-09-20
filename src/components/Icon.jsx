@@ -219,3 +219,35 @@ export const ToolsIcon = ({ style = "" }) => (
     />
   </svg>
 );
+
+export const QrIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3M20 14v3h-3M14 20h3M20 20v-3"
+    />
+  </svg>
+);
+
+export const BarcodeIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeWidth={1.5}
+      d="M4 5v14M8 5v14M11 5v14M13.5 5v14M17 5v14M20 5v14"
+    />
+  </svg>
+);
+
+export const CompressIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M9 4v4a1 1 0 01-1 1H4m16-5v4a1 1 0 01-1 1h-4M9 20v-4a1 1 0 00-1-1H4m16 5v-4a1 1 0 00-1-1h-4"
+    />
+  </svg>
+);

@@ -52,6 +52,10 @@ const ACTIONS = [
   { to: "/tools/merge-pdf", label: "Merge PDFs" },
   { to: "/tools/split-pdf", label: "Split a PDF" },
   { to: "/tools/convert", label: "Convert a file" },
+  { to: "/tools/compress-image", label: "Compress an image" },
+  { to: "/tools/compress-pdf", label: "Compress a PDF" },
+  { to: "/tools/qr-code", label: "Generate a QR code" },
+  { to: "/tools/barcode", label: "Generate a barcode" },
 ];
 
 export default function Home() {

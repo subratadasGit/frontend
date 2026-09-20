@@ -21,6 +21,10 @@ const Tools = lazy(() => import("./page/tools/Tools"));
 const MergePdf = lazy(() => import("./page/tools/MergePdf"));
 const SplitPdf = lazy(() => import("./page/tools/SplitPdf"));
 const Convert = lazy(() => import("./page/tools/Convert"));
+const QrGenerator = lazy(() => import("./page/tools/QrGenerator"));
+const BarcodeGenerator = lazy(() => import("./page/tools/BarcodeGenerator"));
+const CompressImage = lazy(() => import("./page/tools/CompressImage"));
+const CompressPdf = lazy(() => import("./page/tools/CompressPdf"));
 const AdminLayout = lazy(() => import("./page/admin/AdminLayout"));
 const Dashboard = lazy(() => import("./page/admin/Dashboard"));
 const ResourcePage = lazy(() => import("./page/admin/ResourcePage"));
@@ -158,6 +162,38 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Convert />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/qr-code"
+              element={
+                <ProtectedRoute>
+                  <QrGenerator />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/barcode"
+              element={
+                <ProtectedRoute>
+                  <BarcodeGenerator />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/compress-image"
+              element={
+                <ProtectedRoute>
+                  <CompressImage />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/compress-pdf"
+              element={
+                <ProtectedRoute>
+                  <CompressPdf />
                 </ProtectedRoute>
               }
             ></Route>

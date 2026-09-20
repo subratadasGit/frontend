@@ -19,9 +19,11 @@ let pdfjsPromise = null;
  * Loads pdf.js on first use.
  *
  * It is a large dependency and only the PDF-reading paths need it, so it is
- * imported dynamically rather than pulled into the main bundle.
+ * imported dynamically rather than pulled into the main bundle. Exported so
+ * `pdfCompression.js` shares the same cached instance and worker setup rather
+ * than configuring a second one.
  */
-async function getPdfjs() {
+export async function getPdfjs() {
   if (!pdfjsPromise) {
     pdfjsPromise = (async () => {
       const pdfjs = await import("pdfjs-dist");

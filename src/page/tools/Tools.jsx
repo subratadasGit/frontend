@@ -1,7 +1,10 @@
 import Card from "../../components/Card";
 import {
+  BarcodeIcon,
+  CompressIcon,
   ConvertIcon,
   MergeIcon,
+  QrIcon,
   SplitIcon,
   WriteIcon,
 } from "../../components/Icon";
@@ -37,6 +40,34 @@ const tools = [
     description:
       "Images, PDFs and text or data files between formats — PNG, JPG, WEBP, PDF, TXT, MD, CSV, JSON and more.",
     icon: <ConvertIcon style="w-6 h-6" />,
+  },
+  {
+    id: "compress-image",
+    link: "/tools/compress-image",
+    title: "Compress Image",
+    description: "Shrink photos by quality or to a size you name — JPG, WEBP or PNG.",
+    icon: <CompressIcon style="w-6 h-6" />,
+  },
+  {
+    id: "compress-pdf",
+    link: "/tools/compress-pdf",
+    title: "Compress PDF",
+    description: "Shrink a scanned or image-heavy PDF by re-encoding its pages.",
+    icon: <CompressIcon style="w-6 h-6" />,
+  },
+  {
+    id: "qr-code",
+    link: "/tools/qr-code",
+    title: "QR Code Generator",
+    description: "Text, links, Wi-Fi, contact cards and more — rendered as you type.",
+    icon: <QrIcon style="w-6 h-6" />,
+  },
+  {
+    id: "barcode",
+    link: "/tools/barcode",
+    title: "Barcode Generator",
+    description: "Code 128, EAN, UPC, Code 39 and five more linear formats.",
+    icon: <BarcodeIcon style="w-6 h-6" />,
   },
   {
     id: "humanize",
