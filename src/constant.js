@@ -2,6 +2,7 @@ import {
   expandContent,
   generateArticle,
   generateSeoContent,
+  humanizeContent,
   rewriteContent,
   shortenContent,
 } from "./services/content";
@@ -19,6 +20,7 @@ export const DEFAULT_COLOR_TYPE = "default";
 
 export const COLOR_MAP = {
   rewrite: "bg-blue-100 text-blue-700",
+  humanize: "bg-amber-100 text-amber-700",
   shorten: "bg-green-100 text-green-700",
   lengthen: "bg-purple-100 text-purple-700",
   default: "bg-gray-100 text-gray-700",
@@ -92,5 +94,20 @@ export const PAGES = {
     "output-form-action":
       "Fill out the form and click generate to generate SEO content",
     handler: generateSeoContent,
+  },
+  humanize: {
+    header: "Humanizer",
+    "sub-header":
+      "Rewrite machine-drafted prose so it reads like a person wrote it",
+    "input-placeholder": "Paste the AI-drafted text you want to humanize...",
+    "loading-text": "Humanizing...",
+    "button-content": "Humanize content",
+    "output-header": "Humanized content",
+    "redo-instruction": "Humanize New",
+    "output-subheader": "Your humanized content will appear here",
+    "output-form-action":
+      "Paste a draft and click humanize to rewrite it in a natural voice",
+    note: "This rewrites the tell-tale patterns of machine drafts — uniform sentence length, stock transitions, hedging — into a more natural voice. No tool can guarantee a given AI detector will be fooled, and detector scores are not reliable evidence either way, so treat the result as a better draft rather than a certificate.",
+    handler: humanizeContent,
   },
 };

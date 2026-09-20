@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { imageHistory } from "../services/image";
-import { Download, ErrorIcon, LoadingIcon } from "../components/Icon";
+import { Download, ErrorIcon, LoadingIcon, WriteIcon } from "../components/Icon";
 import { downloadImage } from "../utils/global";
 import { Btn, EmptyState, Page, PageHeader } from "../components/ui/AppUI";
+import ImageEditor from "../components/image/ImageEditor";
 
 export default function ImageHistory() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [generatedImages, setGeneratedImages] = useState([]);
+  const [editing, setEditing] = useState(null);
 
   async function getImages() {
     try {
@@ -26,6 +28,31 @@ export default function ImageHistory() {
   useEffect(() => {
     getImages();
   }, []);
+
+  // Editing takes over the page rather than opening in a dialog, so the crop
+  // handles and the slider stack get the full width.
+  if (editing) {
+    return (
+      <Page>
+        <PageHeader
+          eyebrow="Images"
+          title="Edit & export"
+          description={editing.prompt || "Crop, grade and export a saved image."}
+          actions={
+            <Btn variant="ghost" onClick={() => setEditing(null)}>
+              Back to history
+            </Btn>
+          }
+        />
+        {/* Keyed by source: a new image remounts the editor with clean state. */}
+        <ImageEditor
+          key={editing.url}
+          src={editing.url}
+          onClose={() => setEditing(null)}
+        />
+      </Page>
+    );
+  }
 
   return (
     <Page>
@@ -97,14 +124,19 @@ export default function ImageHistory() {
                   className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"
                 />
                 {/* Always reachable: visible on hover, and on keyboard focus. */}
-                <div className="tile__meta absolute inset-x-0 bottom-0 flex justify-center p-4 max-sm:!translate-y-0 max-sm:!opacity-100">
+                <div className="tile__meta absolute inset-x-0 bottom-0 flex flex-wrap justify-center gap-2 p-4 max-sm:!translate-y-0 max-sm:!opacity-100">
+                  <Btn onClick={() => setEditing(image)} className="!px-4 !py-2">
+                    <WriteIcon style="w-4 h-4" />
+                    Edit
+                  </Btn>
                   <Btn
+                    variant="ghost"
                     href={image.url}
                     onClick={(event) => {
                       event.preventDefault();
                       downloadImage(image.url);
                     }}
-                    className="!px-4 !py-2"
+                    className="!px-4 !py-2 !bg-black/70"
                   >
                     <Download style="w-4 h-4" />
                     Download

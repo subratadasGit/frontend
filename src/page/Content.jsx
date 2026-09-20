@@ -32,6 +32,13 @@ const contentFeatures = [
     icon: <WriteIcon style="w-6 h-6" />,
   },
   {
+    id: "humanize",
+    link: "/content/humanize",
+    title: "Humanizer",
+    description: "Rewrite a machine draft so it reads like a person wrote it.",
+    icon: <WriteIcon style="w-6 h-6" />,
+  },
+  {
     id: "seo-content",
     link: "/content/seo-content",
     title: "SEO Metadata",
@@ -53,7 +60,7 @@ export default function Content() {
       <PageHeader
         eyebrow="Studio"
         title="Content"
-        description="Five generation actions over one editor, with every result saved to your history."
+        description="Six generation actions over one editor, with every result saved to your history."
       />
 
       <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">

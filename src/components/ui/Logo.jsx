@@ -1,11 +1,13 @@
 /**
- * The creates.io mark.
+ * The Creates.io mark.
  *
  * One component for the landing header, the product navigation, the CMS admin
- * sidebar, and the footer, so the brand is identical everywhere. The favicon is
- * the same shape on a dark tile (`public/favicon.svg`).
+ * sidebar, and the footer, so the brand is identical everywhere. The mark is
+ * drawn in the favicon's ember (#ff4d1c) by default, so the tab icon and the
+ * in-page logo are the same colour — pass `accent={false}` for the plain white
+ * treatment where a surface needs the quieter version.
  */
-export function LogoMark({ className = "h-6 w-6", accent = false }) {
+export function LogoMark({ className = "h-6 w-6", accent = true }) {
   return (
     <svg
       viewBox="0 0 100 100"
@@ -26,8 +28,8 @@ export function LogoMark({ className = "h-6 w-6", accent = false }) {
 export default function Logo({
   className = "",
   markClassName = "h-6 w-6",
-  name = "creates.io",
-  accent = false,
+  name = "Creates.io",
+  accent = true,
 }) {
   return (
     <span className={`flex items-center gap-2.5 ${className}`.trim()}>

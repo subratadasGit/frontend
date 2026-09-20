@@ -15,6 +15,7 @@ const LINKS = [
   { to: "/app", label: "Overview", end: true },
   { to: "/content", label: "Content" },
   { to: "/image", label: "Images" },
+  { to: "/tools", label: "Tools" },
   { to: "/admin", label: "CMS" },
 ];
 

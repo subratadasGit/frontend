@@ -5,8 +5,11 @@ This is the frontend application for **Generator CMS**, an AI-powered tool for c
 ## Features
 
 - **Intuitive UI:** Clean and responsive design using Tailwind CSS.
-- **AI Content Dashboard:** Interfaces for rewriting, expanding, shortening, and generating full SEO articles.
+- **AI Content Dashboard:** Interfaces for rewriting, expanding, shortening, humanizing, and generating full SEO articles.
+- **Humanizer:** Rewrites machine-drafted prose into a natural voice — varied sentence length, no stock transitions or hedging. It is a better draft, not a guarantee about any AI detector's score.
 - **AI Image Generator:** Interface to input prompts and view generated images.
+- **Image Editor:** Crop (free or locked ratio), rotate, flip, one-click looks and eight adjustment sliders on a canvas, then export as PNG, JPG, JPEG or WEBP with quality and scale controls. Runs entirely in the browser; the stored original is never modified.
+- **File Toolkit:** Merge PDFs, split a PDF (per page, fixed chunks, or named ranges), and convert between formats — images (PNG/JPG/JPEG/WEBP/PDF), PDFs (per-page images or extracted text), and text or data files (TXT/MD/HTML/CSV/TSV/JSON/RTF/PDF). All client-side; nothing is uploaded.
 - **History Tracking:** Dedicated views to see past generated content and images.
 - **Authentication:** Protected routes for authenticated users only, with seamless login and signup flows.
 - **Form Validation:** Robust client-side validation using React Hook Form and Zod.
@@ -21,6 +24,7 @@ This is the frontend application for **Generator CMS**, an AI-powered tool for c
 - **HTTP Client:** Axios
 - **Notifications:** React Toastify
 - **Dates:** Moment.js
+- **Documents:** `pdf-lib` (writing PDFs), `pdfjs-dist` (reading and rasterising PDFs)
 
 ## Prerequisites
 
@@ -65,10 +69,14 @@ VITE_API_BASE_URL=http://localhost:8000
 - `src/page/`: Main page components mapping to routes (e.g., Dashboard, Login, Image Generation).
 - `src/services/` & `src/api.js`: Axios configuration and API call wrappers.
 - `src/context/`: React Context providers for global state (e.g., Authentication state).
-- `src/utils/`: Helper functions and utilities.
+- `src/page/tools/`: The client-side file toolkit (merge, split, convert).
+- `src/utils/`: Helper functions and utilities, including `imageEditing.js` (canvas
+  pipeline behind the image editor) and `fileTools.js` (PDF and format conversion).
 - `src/constant.js`: Application-wide constants.
 
 ## Troubleshooting
 
 - **CORS Issues / API Not Found:** Ensure your backend is running and `VITE_API_BASE_URL` in `.env` is correctly pointing to it.
 - **Image/Content Generation Hangs:** The frontend has a configured timeout. If it hangs or times out, check the backend console for provider errors (e.g., Hugging Face or Gemini being overloaded).
+- **PDF-to-image conversion appears stuck:** rendering is driven by animation frames, which browsers pause for background tabs. Keep the tab in the foreground while a large PDF rasterises.
+- **A file will not convert:** the converter handles images, PDFs, and text or data files. Office formats (DOCX, XLSX, PPTX) are not supported — they need a server-side converter.

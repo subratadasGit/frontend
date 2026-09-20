@@ -10,8 +10,10 @@ import {
   ErrorIcon,
   ImageIcon,
   LoadingIcon,
+  WriteIcon,
 } from "../components/Icon";
 import { downloadImage } from "../utils/global";
+import ImageEditor from "../components/image/ImageEditor";
 import {
   Btn,
   EmptyState,
@@ -33,6 +35,7 @@ export default function GenerateImage() {
   const [generatedImage, setGeneratedImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [editing, setEditing] = useState(false);
 
   const {
     register,
@@ -45,6 +48,7 @@ export default function GenerateImage() {
     setIsSubmitting(true);
     setError(null);
     setGeneratedImage(null);
+    setEditing(false);
 
     try {
       const { data: res } = await generateImage(data);
@@ -60,6 +64,32 @@ export default function GenerateImage() {
       setIsSubmitting(false);
     }
   };
+
+  // Editing takes over the full width — the crop handles and the slider stack
+  // need the room, and the prompt form is not useful while you are retouching.
+  if (editing && generatedImage) {
+    return (
+      <Page>
+        <PageHeader
+          eyebrow="Images"
+          title="Edit & export"
+          description="Crop, straighten and grade the result, then export it as PNG, JPG, JPEG or WEBP. Everything runs in your browser — the stored original is untouched."
+          actions={
+            <Btn variant="ghost" onClick={() => setEditing(false)}>
+              Back to prompt
+            </Btn>
+          }
+        />
+        {/* Keyed by source: a new image remounts the editor with clean state
+            rather than carrying the previous one's crop and adjustments. */}
+        <ImageEditor
+          key={generatedImage}
+          src={generatedImage}
+          onClose={() => setEditing(false)}
+        />
+      </Page>
+    );
+  }
 
   return (
     <Page>
@@ -182,7 +212,12 @@ export default function GenerateImage() {
                 />
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
+                <Btn onClick={() => setEditing(true)}>
+                  <WriteIcon style="w-4 h-4" />
+                  Edit & export
+                </Btn>
                 <Btn
+                  variant="ghost"
                   href={generatedImage}
                   onClick={(event) => {
                     event.preventDefault();

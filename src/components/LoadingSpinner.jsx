@@ -1,18 +1,21 @@
-import { LoadingIcon } from "./Icon";
+import BrandLoader from "./ui/BrandLoader";
 
-export default function LoadingSpinner() {
+/**
+ * Full-screen wait shown by route suspense.
+ *
+ * The animation itself lives in `BrandLoader` so the landing page's first paint
+ * uses exactly the same one.
+ */
+export default function LoadingSpinner({ label = "Loading" }) {
   return (
     <div
-      className="flex min-h-screen items-center justify-center bg-[#050505]"
+      className="flex min-h-screen items-center justify-center bg-[#050505] px-6"
       role="status"
       aria-live="polite"
+      aria-busy="true"
     >
-      <div className="text-center">
-        <LoadingIcon style="h-8 w-8 animate-spin text-[#ff4d1c] mx-auto" />
-        <p className="mt-4 font-mono text-[0.6875rem] tracking-[0.2em] text-white/40 uppercase">
-          Loading
-        </p>
-      </div>
+      <BrandLoader label={label} />
+      <span className="sr-only">{label}</span>
     </div>
   );
 }

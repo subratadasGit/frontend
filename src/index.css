@@ -522,3 +522,438 @@ body[data-cursor="custom"] [role="button"] {
   scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
   scrollbar-width: thin;
 }
+
+/* ==========================================================================
+   Brand loader
+   --------------------------------------------------------------------------
+   The one loading state for the whole product: route suspense, the landing
+   page's first paint, and any long-running screen. The mark draws itself in,
+   fills with ember, and then breathes inside a pair of counter-rotating rings
+   while an indeterminate rail runs underneath.
+   ========================================================================== */
+
+.brand-loader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  isolation: isolate;
+}
+
+/* Halftone field behind the mark, on the same 6px cell as the shader fallback
+   so the loader reads as part of the landing's visual system. */
+.brand-loader__field {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  margin: -160px 0 0 -160px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(255, 77, 28, 0.5) 1.1px,
+    transparent 1.2px
+  );
+  background-size: 6px 6px;
+  mask-image: radial-gradient(circle at center, #000 0%, transparent 62%);
+  animation: brand-field 3.6s ease-in-out infinite;
+}
+
+@keyframes brand-field {
+  0%,
+  100% {
+    opacity: 0.16;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.42;
+    transform: scale(1.06);
+  }
+}
+
+.brand-loader__mark {
+  position: relative;
+  width: 104px;
+  height: 104px;
+}
+
+/* Soft ember bloom under the mark. */
+.brand-loader__mark::before {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 77, 28, 0.32) 0%,
+    transparent 68%
+  );
+  animation: brand-bloom 2.4s ease-in-out infinite;
+}
+
+@keyframes brand-bloom {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+.brand-loader__rings,
+.brand-loader__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Two hairline rings turning against each other — the outer one dashed and
+   slow, the inner one a single ember arc at speed. */
+.brand-loader__ring-outer {
+  transform-origin: 50px 50px;
+  animation: brand-spin 6.5s linear infinite;
+}
+
+.brand-loader__ring-inner {
+  transform-origin: 50px 50px;
+  animation: brand-spin 1.6s cubic-bezier(0.62, 0.05, 0.35, 0.95) infinite
+    reverse;
+}
+
+@keyframes brand-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* An ember travelling the outer ring, offset from the arc so the two read as
+   separate objects rather than one blurred rotation. */
+.brand-loader__orbit {
+  transform-origin: 50px 50px;
+  animation: brand-spin 2.8s linear infinite;
+}
+
+/* The mark: outline first, fill second, then a slow breath. */
+.brand-loader__outline {
+  animation: brand-draw 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes brand-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.25;
+  }
+}
+
+.brand-loader__fill {
+  transform-origin: 50px 50px;
+  animation:
+    brand-fill-in 0.9s ease-out 0.85s backwards,
+    brand-breathe 2.4s ease-in-out 1.75s infinite;
+}
+
+@keyframes brand-fill-in {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes brand-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Wordmark, one letter at a time. */
+.brand-loader__letter {
+  display: inline-block;
+  opacity: 0;
+  animation: brand-letter 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes brand-letter {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* Indeterminate rail: a short ember segment sweeping a hairline track. */
+.brand-loader__rail {
+  position: relative;
+  width: 168px;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.brand-loader__rail::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--ember),
+    var(--ember-bright),
+    transparent
+  );
+  animation: brand-rail 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes brand-rail {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+/* Reduced motion: keep the mark and the rail visible, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .brand-loader *,
+  .brand-loader *::before,
+  .brand-loader *::after {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .brand-loader__outline {
+    stroke-dashoffset: 0;
+    opacity: 0.25;
+  }
+
+  .brand-loader__letter {
+    opacity: 1;
+  }
+
+  .brand-loader__rail::after {
+    width: 100%;
+    opacity: 0.7;
+  }
+}
+
+/* ==========================================================================
+   Proof carousel
+   --------------------------------------------------------------------------
+   A scroll-snap rail: the browser owns the physics so swipes, trackpads and
+   the arrow buttons all resolve to the same snap points. One slide per view on
+   phones, two on tablets, three on desktop.
+   ========================================================================== */
+
+.proof-carousel__track {
+  display: flex;
+  gap: 1px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 0;
+  /* Smoothness lives here rather than in `scrollTo({behavior:"smooth"})`: a
+     programmatic smooth scroll inside a mandatory snap container gets re-snapped
+     to the current point by the browser and never moves. Assigning `scrollLeft`
+     with this property set animates and snaps correctly. */
+  scroll-behavior: smooth;
+  /* The hairline between slides comes from the gap showing the track ground,
+     which keeps the divided-columns look the section had before. */
+  background: var(--hairline);
+  scrollbar-width: none;
+}
+
+.proof-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* One slide per view on phones, two from tablet up. Whole slides rather than a
+   fractional peek, so every snap point is reachable and a "page" is always a
+   full card — a fractional width leaves a trailing position that no slide can
+   scroll to, which desynchronises the dots from what is on screen. */
+.proof-carousel__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  background: var(--ink);
+}
+
+@media (min-width: 640px) {
+  .proof-carousel__slide {
+    flex-basis: calc((100% - 1px) / 2);
+  }
+}
+
+/* A lone testimonial is not a carousel — it takes the full measure. */
+.proof-carousel__track[data-single="true"] .proof-carousel__slide {
+  flex-basis: 100%;
+}
+
+/* Off-centre slides recede, so the rail reads as a carousel rather than a
+   plain row that happens to scroll. Only applied while the rail can actually
+   move, otherwise slides would sit permanently dimmed with no way to focus
+   them. */
+.proof-carousel__track[data-scrollable="true"] .proof-carousel__slide > .proof-card {
+  opacity: 0.45;
+  transform: scale(0.975);
+}
+
+.proof-carousel__slide > .proof-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+  .proof-carousel__slide > .proof-card {
+    padding: 2.5rem;
+  }
+}
+
+/* Scoped to the same [data-scrollable] ancestor as the dimming rule above, so
+   this reliably out-specifies it rather than depending on source order. */
+.proof-carousel__track[data-scrollable="true"]
+  .proof-carousel__slide[data-active="true"]
+  > .proof-card,
+.proof-carousel__track[data-scrollable="true"]
+  .proof-carousel__slide:hover
+  > .proof-card,
+.proof-carousel__track[data-scrollable="true"]
+  .proof-carousel__slide:focus-within
+  > .proof-card {
+  opacity: 1;
+  transform: none;
+}
+
+.proof-card__quote {
+  display: block;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: 0.6;
+  color: var(--ember);
+}
+
+.proof-carousel__dot {
+  width: 26px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.18);
+  transition:
+    background-color 0.35s ease,
+    width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.proof-carousel__dot:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.proof-carousel__dot[data-active="true"] {
+  width: 46px;
+  background: var(--ember);
+}
+
+.proof-carousel__dot:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof-carousel__track {
+    scroll-behavior: auto;
+  }
+
+  .proof-carousel__track[data-scrollable="true"] .proof-carousel__slide > .proof-card {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Image editor
+   --------------------------------------------------------------------------
+   Range inputs on the dark product surface. Styled per-engine because the
+   track and thumb pseudo-elements cannot be combined in one selector list.
+   ========================================================================== */
+
+.editor-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  outline: none;
+  cursor: pointer;
+}
+
+.editor-range:disabled {
+  cursor: not-allowed;
+}
+
+.editor-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--ember);
+  box-shadow: 0 0 0 4px rgba(255, 77, 28, 0.16);
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.editor-range::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 6px rgba(255, 77, 28, 0.22);
+}
+
+.editor-range::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--ember);
+  box-shadow: 0 0 0 4px rgba(255, 77, 28, 0.16);
+}
+
+.editor-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgba(255, 77, 28, 0.38);
+}
+
+.editor-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 6px rgba(255, 77, 28, 0.38);
+}

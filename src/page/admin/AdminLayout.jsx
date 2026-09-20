@@ -34,7 +34,7 @@ export default function AdminLayout() {
       <div className="border-b border-white/10 px-5 py-5">
         <Link to="/" className="flex items-center gap-2.5">
           <LogoMark className="h-5 w-5" />
-          <span className="text-sm font-semibold tracking-[-0.02em]">creates.io</span>
+          <span className="text-sm font-semibold tracking-[-0.02em]">Creates.io</span>
           <span className="font-mono text-[0.625rem] tracking-[0.18em] text-white/35 uppercase">
             CMS
           </span>
@@ -94,7 +94,7 @@ export default function AdminLayout() {
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 lg:hidden">
         <span className="flex items-center gap-2.5">
           <LogoMark className="h-5 w-5" />
-          <span className="text-sm font-semibold tracking-[-0.02em]">creates.io</span>
+          <span className="text-sm font-semibold tracking-[-0.02em]">Creates.io</span>
           <span className="font-mono text-[0.625rem] tracking-[0.18em] text-white/35 uppercase">
             CMS
           </span>

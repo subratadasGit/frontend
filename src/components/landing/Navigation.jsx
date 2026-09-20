@@ -68,7 +68,7 @@ export default function Navigation({ items = [], settings, ctaLabel = "Get Start
     };
   }, [open]);
 
-  const siteName = settings?.siteName || "creates.io";
+  const siteName = settings?.siteName || "Creates.io";
 
   const mark = <LogoMark className="h-6 w-6" />;
 

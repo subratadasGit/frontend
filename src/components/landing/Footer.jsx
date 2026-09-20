@@ -55,7 +55,7 @@ export default function Footer({ footer, settings }) {
             <div className="flex items-center gap-2.5">
               <LogoMark className="h-5 w-5" />
               <span className="text-sm font-semibold tracking-[-0.02em]">
-                {settings?.siteName || "creates.io"}
+                {settings?.siteName || "Creates.io"}
               </span>
             </div>
 

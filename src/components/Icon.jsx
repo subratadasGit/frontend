@@ -158,3 +158,64 @@ export const SearchIcon = ({ style }) => (
     />
   </svg>
 );
+export const MergeIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M4 4h6v6H4zM14 14h6v6h-6zM10 7h3a2 2 0 012 2v5"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M13 12l2 2 2-2"
+    />
+  </svg>
+);
+
+export const SplitIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M4 4h7v6H4zM13 14h7v6h-7zM4 14h7v6H4z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M15 4h5M17.5 2v4"
+    />
+  </svg>
+);
+
+export const ConvertIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M4 8h13m0 0l-3.5-3.5M17 8l-3.5 3.5M20 16H7m0 0l3.5-3.5M7 16l3.5 3.5"
+    />
+  </svg>
+);
+
+export const ToolsIcon = ({ style = "" }) => (
+  <svg className={style} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M14.7 6.3a4 4 0 105.02 5.02l-3.3 3.3a1.5 1.5 0 000 2.12l2.84 2.84a1.5 1.5 0 002.12-2.12"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M10.5 10.5L4.2 16.8a2.12 2.12 0 103 3l6.3-6.3"
+    />
+  </svg>
+);

@@ -21,6 +21,10 @@ export const generateSeoContent = (data) => {
   return api.post("/v1/content/seo-content", data);
 };
 
+export const humanizeContent = (data) => {
+  return api.post("/v1/content/humanize", data);
+};
+
 export const contentHistory = () => {
   return api.get("/v1/content/history");
 };

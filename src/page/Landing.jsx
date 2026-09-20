@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useLandingContent } from "../cms/queries";
 import Seo from "../components/Seo";
+import BrandLoader from "../components/ui/BrandLoader";
 import Cursor from "../components/ui/Cursor";
 import Navigation from "../components/landing/Navigation";
 import Hero from "../components/landing/Hero";
@@ -82,11 +83,13 @@ export default function Landing() {
   if (status === "loading") {
     return (
       <div
-        className="landing flex min-h-screen items-center justify-center"
+        className="landing flex min-h-screen items-center justify-center px-6"
         role="status"
         aria-live="polite"
+        aria-busy="true"
       >
-        <span className="eyebrow animate-pulse">Loading</span>
+        <BrandLoader label="Loading" />
+        <span className="sr-only">Loading</span>
       </div>
     );
   }

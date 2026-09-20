@@ -1,21 +1,27 @@
 import { toast } from "react-toastify";
 import { COLOR_MAP, DEFAULT_COLOR_TYPE } from "../constant";
 
-export const downloadImage = async (image) => {
-  // if we don't have image url then return
-  if (!image) return;
-  const res = await fetch(image);
-  const blob = await res.blob();
+/** Saves an in-memory blob to disk under `filename`. */
+export const downloadBlob = (blob, filename) => {
+  if (!blob) return;
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "download.jpg"; // change file name if needed
+  a.download = filename || "download";
 
   document.body.appendChild(a);
   a.click();
   a.remove();
 
   window.URL.revokeObjectURL(url);
+};
+
+export const downloadImage = async (image, filename = "download.jpg") => {
+  // if we don't have image url then return
+  if (!image) return;
+  const res = await fetch(image);
+  const blob = await res.blob();
+  downloadBlob(blob, filename);
 };
 
 export const capitalizeWord = (str) => {

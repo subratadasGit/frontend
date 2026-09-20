@@ -17,6 +17,10 @@ const GenerateContent = lazy(() => import("./page/GenerateContent"));
 const ImageHistory = lazy(() => import("./page/ImageHistory"));
 const ContentHistory = lazy(() => import("./page/ContentHistory"));
 const ContentDetails = lazy(() => import("./page/ContentDetails"));
+const Tools = lazy(() => import("./page/tools/Tools"));
+const MergePdf = lazy(() => import("./page/tools/MergePdf"));
+const SplitPdf = lazy(() => import("./page/tools/SplitPdf"));
+const Convert = lazy(() => import("./page/tools/Convert"));
 const AdminLayout = lazy(() => import("./page/admin/AdminLayout"));
 const Dashboard = lazy(() => import("./page/admin/Dashboard"));
 const ResourcePage = lazy(() => import("./page/admin/ResourcePage"));
@@ -120,6 +124,40 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ContentDetails />
+                </ProtectedRoute>
+              }
+            ></Route>
+
+            {/* Toolkit — client-side document utilities, no API calls */}
+            <Route
+              path="/tools"
+              element={
+                <ProtectedRoute>
+                  <Tools />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/merge-pdf"
+              element={
+                <ProtectedRoute>
+                  <MergePdf />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/split-pdf"
+              element={
+                <ProtectedRoute>
+                  <SplitPdf />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/tools/convert"
+              element={
+                <ProtectedRoute>
+                  <Convert />
                 </ProtectedRoute>
               }
             ></Route>

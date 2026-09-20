@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/auth";
-import { ImageIcon, ListIcon, WriteIcon } from "../components/Icon";
+import { ImageIcon, ListIcon, ToolsIcon, WriteIcon } from "../components/Icon";
 import { Btn, Page, PageHeader, Panel } from "../components/ui/AppUI";
 
 /**
@@ -26,6 +26,13 @@ const TOOLS = [
     icon: <ImageIcon style="w-6 h-6" />,
   },
   {
+    to: "/tools",
+    title: "File Toolkit",
+    description:
+      "Merge and split PDFs, and convert files between formats — all in your browser.",
+    icon: <ToolsIcon style="w-6 h-6" />,
+  },
+  {
     to: "/content/history",
     title: "History",
     description:
@@ -39,8 +46,12 @@ const ACTIONS = [
   { to: "/content/expand", label: "Expand content" },
   { to: "/content/shorten", label: "Shorten content" },
   { to: "/content/generate-article", label: "Generate article" },
+  { to: "/content/humanize", label: "Humanize a draft" },
   { to: "/content/seo-content", label: "SEO metadata" },
   { to: "/image/generate", label: "Generate image" },
+  { to: "/tools/merge-pdf", label: "Merge PDFs" },
+  { to: "/tools/split-pdf", label: "Split a PDF" },
+  { to: "/tools/convert", label: "Convert a file" },
 ];
 
 export default function Home() {
@@ -64,7 +75,7 @@ export default function Home() {
         />
         <Panel>
           <p className="text-sm leading-relaxed text-white/55">
-            creates.io turns a prompt into publish-ready work — rewrites,
+            Creates.io turns a prompt into publish-ready work — rewrites,
             expansions, full articles, SEO metadata, and original imagery — and
             keeps every version in one searchable workspace.
           </p>
@@ -96,7 +107,7 @@ export default function Home() {
         >
           Tools
         </h2>
-        <div className="mt-5 grid gap-4 sm:gap-5 md:grid-cols-3">
+        <div className="mt-5 grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
           {TOOLS.map((tool, index) => (
             <Link
               key={tool.to}

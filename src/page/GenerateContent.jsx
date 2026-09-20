@@ -102,6 +102,14 @@ export default function GenerateContent() {
               <FieldError id="content-error">{errors?.content?.message}</FieldError>
             </div>
 
+            {/* Only some actions carry a caveat — the humanizer, in particular,
+                should not be read as a guarantee about detector scores. */}
+            {pageContent.note ? (
+              <p className="border-l-2 border-[#ff4d1c]/50 bg-white/[0.02] px-4 py-3 text-xs leading-relaxed text-white/45">
+                {pageContent.note}
+              </p>
+            ) : null}
+
             {error ? (
               <p
                 role="alert"

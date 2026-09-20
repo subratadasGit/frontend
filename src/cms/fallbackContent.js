@@ -9,7 +9,7 @@
 
 export const FALLBACK_CONTENT = {
   "settings": {
-    "siteName": "creates.io",
+    "siteName": "Creates.io",
     "logo": "/favicon.svg",
     "favicon": "/favicon.svg",
     "primaryColor": "#FF4D1C",
@@ -40,7 +40,7 @@ export const FALLBACK_CONTENT = {
   "hero": {
     "eyebrow": "Content · Images · Managed",
     "title": "CONTENT\nWITHOUT\nLIMITS.",
-    "description": "creates.io turns a prompt into publish-ready work. Rewrite, expand, shorten, draft full articles, generate SEO metadata, and produce original images — then manage every version in one workspace.",
+    "description": "Creates.io turns a prompt into publish-ready work. Rewrite, expand, shorten, draft full articles, generate SEO metadata, and produce original images — then manage every version in one workspace.",
     "primaryCTA": {
       "label": "Start Creating",
       "url": "/register"
@@ -97,11 +97,11 @@ export const FALLBACK_CONTENT = {
         "icon": "linkedin"
       }
     ],
-    "copyright": "© 2026 creates.io. All rights reserved."
+    "copyright": "© 2026 Creates.io. All rights reserved."
   },
   "seo": {
-    "metaTitle": "creates.io — AI Content and Image Generation",
-    "metaDescription": "creates.io turns a prompt into publish-ready work: rewrite, expand, shorten, draft articles, generate SEO metadata and original images, and manage every version in one workspace.",
+    "metaTitle": "Creates.io — AI Content and Image Generation",
+    "metaDescription": "Creates.io turns a prompt into publish-ready work: rewrite, expand, shorten, draft articles, generate SEO metadata and original images, and manage every version in one workspace.",
     "keywords": [
       "ai content generator",
       "content management system",
@@ -110,7 +110,7 @@ export const FALLBACK_CONTENT = {
       "article writer",
       "content rewriting"
     ],
-    "ogTitle": "creates.io — AI Content and Image Generation",
+    "ogTitle": "Creates.io — AI Content and Image Generation",
     "ogDescription": "Rewrite, expand, draft, optimise and illustrate your content — then manage every version in one workspace.",
     "ogImage": "",
     "canonicalUrl": "",
@@ -171,7 +171,7 @@ export const FALLBACK_CONTENT = {
       "type": "statement",
       "title": "NOT JUST\nGENERATED.",
       "subtitle": "",
-      "description": "Most tools hand you a block of text and walk away. creates.io keeps the whole lifecycle — the prompt, every revision, the images, and the metadata — in one place you can come back to.",
+      "description": "Most tools hand you a block of text and walk away. Creates.io keeps the whole lifecycle — the prompt, every revision, the images, and the metadata — in one place you can come back to.",
       "content": {
         "lines": [
           {
